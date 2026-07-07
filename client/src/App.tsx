@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import Login from "./pages/Login/Login";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import LeaveHistory from "./pages/LeaveHistory/LeaveHistory";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
@@ -18,6 +19,15 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/leave-history"
+        element={
+          <ProtectedRoute>
+            <LeaveHistory />
           </ProtectedRoute>
         }
       />

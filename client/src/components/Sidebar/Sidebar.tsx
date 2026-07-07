@@ -15,7 +15,7 @@ import HistoryIcon from '@mui/icons-material/History';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import RateReviewIcon from '@mui/icons-material/RateReview';
-
+import { useNavigate } from "react-router-dom";
 import './Sidebar.css';
 
 // Define explicit valid user roles
@@ -67,8 +67,9 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     roles: ['Employee', 'Manager', 'Admin'],
   },
 ];
-
 export default function Sidebar({ userRole, activeItem, setActiveItem }: SidebarProps) {
+
+  const navigate = useNavigate();
   
   // Filter out authorized buttons dynamically based on active session role data
   const filteredItems = SIDEBAR_ITEMS.filter((item) =>
@@ -92,7 +93,13 @@ export default function Sidebar({ userRole, activeItem, setActiveItem }: Sidebar
               <ListItemButton
                 className="sidebar-list-item-btn"
                 selected={isSelected}
-                onClick={() => setActiveItem(item.text)}
+               onClick={() => {
+  setActiveItem(item.text);
+
+  if (item.text === "Leave History") {
+    navigate("/leave-history");
+  }
+}}
               >
                 <ListItemIcon>
                   {item.icon}

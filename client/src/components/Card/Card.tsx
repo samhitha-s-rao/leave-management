@@ -65,7 +65,7 @@ const Cards = ({ role }: CardProps) => {
     setAnchorEl(null);
   };
 
-  // ================= Employee =================
+ 
 
   if (role === "Employee") {
     return (
@@ -116,8 +116,6 @@ const Cards = ({ role }: CardProps) => {
       </Box>
     );
   }
-
-  // ================= Manager & Admin =================
 
   return (
     <Box className="tableContainer">
