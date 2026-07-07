@@ -1,0 +1,99 @@
+.profile-page{
+    width:100%;
+    padding:32px;
+}
+
+.profile-title{
+    color:#1A3E7A;
+    font-size:34px !important;
+    font-weight:800 !important;
+    margin-bottom:30px !important;
+    padding-left:10px;
+    position:relative;
+    letter-spacing:0.5px;
+}
+
+.profile-title::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:4px;
+    height:85%;
+    width:5px;
+    background:#1A3E7A;
+    border-radius:10px;
+}
+.profile-card{
+    width:100%;
+    border-radius:16px !important;
+    overflow:hidden;
+}
+
+.profile-card .MuiCardContent-root{
+    padding:40px !important;
+}
+
+.info-row{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:18px 0;
+    border-bottom:1px solid #eceff5;
+}
+
+.info-row:last-child{
+    border-bottom:none;
+}
+
+.icon{
+    color:#1A3E7A;
+    background:#eef4ff;
+    padding:12px;
+    border-radius:50%;
+    font-size:24px !important;
+}
+
+.label{
+    color:#7a7a7a;
+    font-size:13px !important;
+    font-weight:600 !important;
+    margin-bottom:4px !important;
+    text-transform:uppercase;
+}
+
+.value{
+    color:#222;
+    font-size:17px;
+    font-weight:500;
+}
+
+.profile-left{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    height:100%;
+}
+
+.profile-avatar{
+    width:160px !important;
+    height:160px !important;
+    border:5px solid #1A3E7A !important;
+    box-shadow:0 10px 25px rgba(26,62,122,.25);
+}
+
+.profile-name{
+    margin-top:20px !important;
+    font-weight:700 !important;
+}
+
+.profile-role{
+    margin-top:12px;
+}
+
+.profile-section-title{
+    color:#1A3E7A;
+    font-size:22px !important;
+    font-weight:700 !important;
+    margin-bottom:10px !important;
+}

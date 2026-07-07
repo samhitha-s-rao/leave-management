@@ -5,7 +5,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ApplyLeave from "./pages/ApplyLeave/ApplyLeave";
 import LeaveHistory from "./pages/LeaveHistory/LeaveHistory";
-import Notification from "./pages/Notification/Notification";
+import Notification from "./pages/Notification/Notification";import Profile from "./pages/Profile/Profile";
 function App() {
   return (
     <Routes>
@@ -32,6 +32,14 @@ function App() {
         element={
           <ProtectedRoute>
             <LeaveHistory />
+          </ProtectedRoute>
+        }
+      />
+       <Route
+        path="/Profile"
+        element={
+          <ProtectedRoute>
+            <Profile />
           </ProtectedRoute>
         }
       />
