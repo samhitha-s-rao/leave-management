@@ -22,19 +22,23 @@ const ApplyLeave = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [reason, setReason] = useState("");
-
+const [leaveDuration, setLeaveDuration] = useState("Full Day");
   const calculateDays = () => {
-    if (!startDate || !endDate) return "";
+  if (!startDate || !endDate) return "";
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+  if (leaveDuration === "Half Day") {
+    return 0.5;
+  }
 
-    const diff =
-      (end.getTime() - start.getTime()) /
-      (1000 * 60 * 60 * 24);
+  const start = new Date(startDate);
+  const end = new Date(endDate);
 
-    return diff >= 0 ? diff + 1 : "";
-  };
+  const diff =
+    (end.getTime() - start.getTime()) /
+    (1000 * 60 * 60 * 24);
+
+  return diff >= 0 ? diff + 1 : "";
+};
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +47,10 @@ const ApplyLeave = () => {
       alert("Please fill all fields.");
       return;
     }
+    if (leaveDuration === "Half Day" && startDate !== endDate) {
+  alert("Half Day leave can only be applied for a single day.");
+  return;
+}
 
     alert("Leave Applied Successfully (Mock)");
 
@@ -52,12 +60,13 @@ const ApplyLeave = () => {
     setReason("");
   };
 
-  const handleReset = () => {
-    setLeaveType("");
-    setStartDate("");
-    setEndDate("");
-    setReason("");
-  };
+const handleReset = () => {
+  setLeaveType("");
+  setLeaveDuration("Full Day");
+  setStartDate("");
+  setEndDate("");
+  setReason("");
+};
 
   return (
     <Paper elevation={2} className="apply-card">
@@ -78,37 +87,36 @@ const ApplyLeave = () => {
 
         <Grid container spacing={3}>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              select
-              fullWidth
-              label="Leave Type"
-              value={leaveType}
-              onChange={(e) =>
-                setLeaveType(e.target.value)
-              }
-            >
-              {leaveTypes.map((type) => (
-                <MenuItem
-                  key={type}
-                  value={type}
-                >
-                  {type}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+{/* Leave Type */}
+<Grid size={{ xs: 12, md: 6 }}>
+  <TextField
+    select
+    fullWidth
+    label="Leave Type"
+    value={leaveType}
+    onChange={(e) => setLeaveType(e.target.value)}
+  >
+    {leaveTypes.map((type) => (
+      <MenuItem key={type} value={type}>
+        {type}
+      </MenuItem>
+    ))}
+  </TextField>
+</Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              fullWidth
-              label="Number of Days"
-              value={calculateDays()}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </Grid>
+{/* Leave Duration */}
+<Grid size={{ xs: 12, md: 6 }}>
+  <TextField
+    select
+    fullWidth
+    label="Leave Duration"
+    value={leaveDuration}
+    onChange={(e) => setLeaveDuration(e.target.value)}
+  >
+    <MenuItem value="Full Day">Full Day</MenuItem>
+    <MenuItem value="Half Day">Half Day</MenuItem>
+  </TextField>
+</Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
