@@ -7,6 +7,8 @@ import ApplyLeave from "./pages/ApplyLeave/ApplyLeave";
 import LeaveHistory from "./pages/LeaveHistory/LeaveHistory";
 import Notification from "./pages/Notification/Notification";
 import Profile from "./pages/Profile/Profile";
+import ViewRequests from "./components/ViewRequests/ViewRequests";
+
 function App() {
   return (
     <Routes>
@@ -44,6 +46,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+       <Route
+  path="/view-requests"
+  element={
+    <ProtectedRoute>
+      <ViewRequests />
+    </ProtectedRoute>
+  }
+/>
 
     </Routes>
   );
