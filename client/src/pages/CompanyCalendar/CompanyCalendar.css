@@ -28,9 +28,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 25px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #ffffff;
+    padding: 18px 24px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .month-title {
@@ -67,18 +67,24 @@
 /* Individual Day */
 
 .calendar-cell {
-    border-right: 1px solid #eef1f5;
-    border-bottom: 1px solid #eef1f5;
-    padding: 10px;
-    cursor: pointer;
+    min-height: 110px;
+    border: 1px solid #e8edf5;
+    border-radius: 10px;
+    padding: 8px;
+    background: #fff;
     transition: all 0.2s ease;
+    cursor: pointer;
     position: relative;
 }
 
 .calendar-cell:hover {
     background: #f8fbff;
+    z-index: 10;
+    box-shadow: 0 0 0 2px #1A3E7A;
 }
-
+.calendar-empty-cell {
+    min-height: 110px;
+}
 .inactive-date {
     background: #fafafa;
     color: #b0b0b0;
@@ -105,22 +111,25 @@
 /* Holiday List */
 
 .holiday-list {
-    margin-top: 10px;
+    margin-top: 8px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
-
-/* Holiday Tag */
 
 .holiday-chip {
     background: #eef4ff;
     color: #1A3E7A;
     border-left: 4px solid #1A3E7A;
-    padding: 5px 8px;
+    padding: 4px 8px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 600;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
