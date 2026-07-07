@@ -13,9 +13,12 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  Button,
 } from "@mui/material";
 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const requestData = [
   {
@@ -54,6 +57,7 @@ const requestData = [
 ];
 
 const ViewRequests = () => {
+    const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const open = Boolean(anchorEl);
@@ -70,6 +74,13 @@ const ViewRequests = () => {
 
   return (
     <Box sx={{ p: 4 }}>
+        <Button
+  startIcon={<ArrowBackIcon />}
+  variant="outlined"
+  sx={{ mb: 2 }}
+  onClick={() => navigate("/dashboard")}
+>
+</Button>
 
       <Typography
         variant="h4"
@@ -189,6 +200,7 @@ const ViewRequests = () => {
           Comment
         </MenuItem>
       </Menu>
+      
 
     </Box>
   );

@@ -8,7 +8,10 @@ import {
   TableRow,
   Typography,
   Chip,
+  Button,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const employeeHistory = [
   {
@@ -65,7 +68,7 @@ const managerHistory = [
 ];
 
 const LeaveHistory = () => {
-
+ const navigate = useNavigate();
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
     JSON.parse(sessionStorage.getItem("user") || "null");
@@ -74,6 +77,14 @@ const LeaveHistory = () => {
 
   return (
     <div style={{ padding: "30px" }}>
+         <Button
+  startIcon={<ArrowBackIcon />}
+  variant="outlined"
+  sx={{ mb: 2 }}
+  onClick={() => navigate("/dashboard")}
+>
+</Button>
+
 
       <Typography variant="h4" mb={3}>
         Leave History

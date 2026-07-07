@@ -1,6 +1,10 @@
-import { Paper, Typography } from "@mui/material";
+import { Paper, Typography, Button } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 const Notification = () => {
+  const navigate = useNavigate();
+
   return (
     <Paper
       elevation={2}
@@ -10,6 +14,15 @@ const Notification = () => {
         boxShadow: "0 2px 10px rgba(0,0,0,.08)",
       }}
     >
+      <Button
+        startIcon={<ArrowBackIcon />}
+        variant="outlined"
+        sx={{ mb: 2 }}
+        onClick={() => navigate("/dashboard")}
+      >
+        
+      </Button>
+
       <Typography
         variant="h4"
         sx={{
