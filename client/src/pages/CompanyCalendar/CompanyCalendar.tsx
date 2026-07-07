@@ -23,6 +23,9 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -37,6 +40,7 @@ interface Holiday {
 }
 
 const CompanyCalendar: React.FC = () => {
+   const navigate = useNavigate();
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
     JSON.parse(sessionStorage.getItem("user") || "null");
@@ -141,9 +145,17 @@ const CompanyCalendar: React.FC = () => {
 
   return (
     <Box className="company-calendar-page">
+      <Button
+  startIcon={<ArrowBackIcon />}
+  variant="outlined"
+  sx={{ mb: 2 }}
+  onClick={() => navigate("/dashboard")}
+>
+</Button>
       <Typography className="calendar-title">
         Company Calendar
       </Typography>
+      
 
       <Paper elevation={3} className="calendar-container">
         {/* Header */}

@@ -5,10 +5,18 @@ import {
   Divider,
   Paper,
   Typography,
+  Button
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+
+
 
 const Profile = () => {
+    const navigate = useNavigate();
+
+
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
     JSON.parse(sessionStorage.getItem("user") || "null");
@@ -33,6 +41,14 @@ const Profile = () => {
       >
         MY PROFILE
       </Typography>
+       <Button
+  startIcon={<ArrowBackIcon />}
+  variant="outlined"
+  sx={{ mb: 2 }}
+  onClick={() => navigate("/dashboard")}
+>
+</Button>
+
 
       <Paper
         elevation={2}

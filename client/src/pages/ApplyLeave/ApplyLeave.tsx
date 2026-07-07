@@ -9,6 +9,9 @@ import {
   Typography,
 } from "@mui/material";
 import "./ApplyLeave.css";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+
 
 const leaveTypes = [
   "Casual Leave",
@@ -18,6 +21,7 @@ const leaveTypes = [
 ];
 
 const ApplyLeave = () => {
+   const navigate = useNavigate();
   const [leaveType, setLeaveType] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -69,6 +73,13 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
 
   return (
     <Paper elevation={2} className="apply-card">
+<Button
+  startIcon={<ArrowBackIcon />}
+  variant="outlined"
+  sx={{ mb: 2 }}
+  onClick={() => navigate("/dashboard")}
+>
+</Button>
 
       <Typography variant="h4" className="page-title">
         Apply Leave
