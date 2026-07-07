@@ -60,13 +60,12 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
     setReason("");
   };
 
-const handleReset = () => {
-  setLeaveType("");
-  setLeaveDuration("Full Day");
-  setStartDate("");
-  setEndDate("");
-  setReason("");
-};
+  const handleReset = () => {
+    setLeaveType("");
+    setStartDate("");
+    setEndDate("");
+    setReason("");
+  };
 
   return (
     <Paper elevation={2} className="apply-card">
@@ -160,6 +159,17 @@ const handleReset = () => {
               }
             />
           </Grid>
+          <Grid size={12}>
+  <div className="days-card">
+    <Typography className="days-title">
+      Number of Days
+    </Typography>
+
+    <Typography className="days-value">
+      {calculateDays() || 0}
+    </Typography>
+  </div>
+</Grid>
 
         </Grid>
 
