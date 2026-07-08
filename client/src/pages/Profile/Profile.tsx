@@ -106,11 +106,15 @@ const Profile = () => {
       </Button>
 
       <Typography className="profile-title">
-        MY PROFILE
+        My Profile
       </Typography>
 
       <Paper elevation={3} className="profile-card">
-        <Grid container spacing={2}>
+        <Grid
+  container
+  spacing={4}
+  alignItems="flex-start"
+>
           {/* Left Section */}
 
           <Grid size={{ xs: 12, md: 4 }}>
