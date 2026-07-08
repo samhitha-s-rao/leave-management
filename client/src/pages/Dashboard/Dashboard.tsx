@@ -31,29 +31,34 @@ const [isCheckedIn, setIsCheckedIn] = useState(
     <div className="dashboard">
      <div className="dashboard-content">
         <div className="card">
-          <h2>Welcome, {user.name}</h2>
+          <div className="dashboard-header">
+  <div className="user-info">
+    <h2>Welcome, {user.name}</h2>
+    <h3>Role: {user.role}</h3>
+  </div>
 
-          <h3>Role: {user.role}</h3>
-          <div className="attendance-actions">
-            <Button
-              variant="contained"
-              className="checkin-btn"
-              onClick={handleCheckIn}
-              disabled={isCheckedIn}
-            >
-              Check In
-            </Button>
+  <div className="attendance-actions">
+    <Button
+      variant="contained"
+      className="checkin-btn"
+      onClick={handleCheckIn}
+      disabled={isCheckedIn}
+    >
+      Check In
+    </Button>
 
-            <Button
-              variant="contained"
-              className="checkout-btn"
-              onClick={handleCheckOut}
-              disabled={!isCheckedIn}
-            >
-              Check Out
-            </Button>
-          </div>
-          <Cards role={user.role} />
+    <Button
+      variant="contained"
+      className="checkout-btn"
+      onClick={handleCheckOut}
+      disabled={!isCheckedIn}
+    >
+      Check Out
+    </Button>
+  </div>
+</div>
+
+<Cards role={user.role} />
         </div>
       </div>
     </div>

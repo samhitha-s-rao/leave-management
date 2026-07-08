@@ -82,7 +82,7 @@ const LeaveHistory = () => {
 
   if (!user) return null;
   const exportToExcel = () => {
-  let data: any[] = [];
+  let data: unknown[] = [];
 
   if (user.role === "Employee") {
     data = myLeaveHistory.map((leave) => ({
