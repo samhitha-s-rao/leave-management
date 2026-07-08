@@ -66,3 +66,20 @@
   background-color: #f7fafc;
   border-bottom: 1px solid #e2e8f0;
 }
+
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-container .MuiList-root {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 150px);
+}
+
+.sidebar-container .MuiListItem-root:last-child {
+  margin-top: auto;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 10px;
+}
