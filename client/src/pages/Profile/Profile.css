@@ -52,15 +52,6 @@
 .info-row:last-child{
     border-bottom:none;
 }
-
-.icon{
-    color:#1A3E7A;
-    background:#eef4ff;
-    padding:12px;
-    border-radius:50%;
-    font-size:24px !important;
-}
-
 .label{
     color:#7a7a7a;
     font-size:13px !important;
@@ -105,4 +96,7 @@
     font-size:22px !important;
     font-weight:700 !important;
     margin-bottom:20px !important;
+}
+.icon{
+    display: none !important;
 }

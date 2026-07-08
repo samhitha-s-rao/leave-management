@@ -17,6 +17,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FactCheckIcon from "@mui/icons-material/FactCheck";
 import './Sidebar.css';
 import type {  SidebarProps, SidebarItem } from "../../types";
 
@@ -51,12 +52,12 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
     icon: <AccountCircleIcon fontSize="small" />,
     roles: ['Employee', 'Manager', 'Admin'],
   },
-  {
-    text: 'Attendance',
-    icon: <AccountCircleIcon fontSize="small" />,
-    roles: ['Manager', 'Admin'],
-  },
   
+{
+  text: 'Attendance',
+  icon: <FactCheckIcon fontSize="small" />,
+  roles: ['Manager', 'Admin'],
+},
 {
   text: 'Company Calendar',
   icon: <CalendarMonthIcon fontSize="small" />,
