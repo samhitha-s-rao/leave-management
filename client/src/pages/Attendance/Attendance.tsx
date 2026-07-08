@@ -15,9 +15,14 @@ import {
 } from "@mui/material";
 import { mockUsers } from "../../mock/users";
 import "./Attendance.css";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+
 const employees = mockUsers;
 
+
 const Attendance = () => {
+   const navigate = useNavigate();
   const [attendance, setAttendance] = useState<Record<number, string>>({});
 
 
@@ -39,6 +44,13 @@ const Attendance = () => {
 
   return (
   <Paper elevation={2} className="attendance-card">
+     <Button
+  startIcon={<ArrowBackIcon />}
+  variant="outlined"
+  sx={{ mb: 2 }}
+  onClick={() => navigate("/dashboard")}
+>
+</Button>
 
     <div className="attendance-header">
 

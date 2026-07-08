@@ -88,7 +88,7 @@ const LeaveHistory = () => {
         sx={{ mb: 3 }}
         onClick={() => navigate("/dashboard")}
       >
-        Back
+        
       </Button>
 
       <Typography variant="h4" mb={4}>

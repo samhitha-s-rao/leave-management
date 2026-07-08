@@ -102,7 +102,7 @@ const Profile = () => {
         onClick={() => navigate("/dashboard")}
         sx={{ mb: 2 }}
       >
-        Back
+        
       </Button>
 
       <Typography className="profile-title">
