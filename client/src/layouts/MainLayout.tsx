@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar/Sidebar";
-
+import Navbar from "../components/Navbar/Navbar";
 import { useState } from "react";
 
 const MainLayout = () => {
@@ -13,7 +13,7 @@ const MainLayout = () => {
   return (
     <>
      
-
+      <Navbar />
       <div
         style={{
           display: "flex",

@@ -10,9 +10,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <h1>Leave Management System</h1>
-
-      <div className="dashboard-content">
+     <div className="dashboard-content">
         <div className="card">
           <h2>Welcome, {user.name}</h2>
 
