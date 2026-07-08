@@ -80,10 +80,10 @@ export default function Sidebar({ userRole, activeItem, setActiveItem }: Sidebar
   return (
     <div className="sidebar-container">
       {/* Sidebar Label tracking context */}
-      <Typography className="sidebar-header-label">
+      {/* <Typography className="sidebar-header-label">
         {userRole}
       </Typography>
-      
+       */}
       <Divider sx={{ mb: 1 }} />
       
       <List disablePadding>

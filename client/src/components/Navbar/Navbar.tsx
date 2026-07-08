@@ -29,10 +29,20 @@ const Navbar = () => {
       <Toolbar className="navbar-toolbar">
         {/* Logo */}
         <Box className="navbar-left">
-          <Typography className="navbar-logo-text">
-            Primordius
-          </Typography>
-        </Box>
+  <Box className="company-logo">
+    PT
+  </Box>
+
+  <Box className="company-info">
+    <Typography className="company-name">
+      Primordius Technologies
+    </Typography>
+
+    {/* <Typography className="company-subtitle">
+      Pvt. Ltd.
+    </Typography> */}
+  </Box>
+</Box>
 
         {/* Title */}
         <Typography className="navbar-title">
