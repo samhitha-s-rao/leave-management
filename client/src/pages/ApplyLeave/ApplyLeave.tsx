@@ -51,6 +51,7 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
       alert("Please fill all fields.");
       return;
     }
+    
     if (leaveDuration === "Half Day" && startDate !== endDate) {
   alert("Half Day leave can only be applied for a single day.");
   return;
@@ -99,19 +100,25 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
 
 {/* Leave Type */}
 <Grid size={{ xs: 12, md: 6 }}>
-  <TextField
-    select
-    fullWidth
-    label="Leave Type"
-    value={leaveType}
-    onChange={(e) => setLeaveType(e.target.value)}
-  >
-    {leaveTypes.map((type) => (
-      <MenuItem key={type} value={type}>
-        {type}
-      </MenuItem>
-    ))}
-  </TextField>
+<TextField
+  select
+  fullWidth
+  label="Leave Type"
+  value={leaveType}
+  onChange={(e) => {
+    setLeaveType(e.target.value);
+
+    // Reset dates whenever leave type changes
+    setStartDate("");
+    setEndDate("");
+  }}
+>
+  {leaveTypes.map((type) => (
+    <MenuItem key={type} value={type}>
+      {type}
+    </MenuItem>
+  ))}
+</TextField>
 </Grid>
 
 {/* Leave Duration */}
@@ -128,35 +135,43 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
   </TextField>
 </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              fullWidth
-              type="date"
-              label="Start Date"
-              value={startDate}
-              onChange={(e) =>
-                setStartDate(e.target.value)
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+  <TextField
+    fullWidth
+    type="date"
+    label="Start Date"
+    value={startDate}
+    onChange={(e) => setStartDate(e.target.value)}
+    InputLabelProps={{
+      shrink: true,
+    }}
+    inputProps={{
+      min:
+        leaveType === "Sick Leave"
+          ? undefined
+          : new Date().toISOString().split("T")[0],
+    }}
+  />
+</Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              fullWidth
-              type="date"
-              label="End Date"
-              value={endDate}
-              onChange={(e) =>
-                setEndDate(e.target.value)
-              }
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
+        <Grid size={{ xs: 12, md: 6 }}>
+  <TextField
+    fullWidth
+    type="date"
+    label="End Date"
+    value={endDate}
+    onChange={(e) => setEndDate(e.target.value)}
+    InputLabelProps={{
+      shrink: true,
+    }}
+    inputProps={{
+      min:
+        leaveType === "Sick Leave"
+          ? undefined
+          : startDate || new Date().toISOString().split("T")[0],
+    }}
+  />
+</Grid>
 
           <Grid size={12}>
             <TextField
