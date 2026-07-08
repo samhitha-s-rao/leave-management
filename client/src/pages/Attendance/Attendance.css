@@ -29,10 +29,28 @@
     background:#f5f7fa;
 }
 
+/* Make table headers slightly bolder */
+.attendance-table-head th{
+    font-weight:700 !important;
+    color:#1A3E7A;
+}
+
+/* Add a little padding to rows */
+.MuiTableBody-root .MuiTableRow-root{
+    height:70px;
+}
+
+/* Hover effect */
+.MuiTableBody-root .MuiTableRow-root:hover{
+    background:#fafafa;
+}
+
+/* Status badges */
+
 .status-present{
     background:#d4edda;
     color:#155724;
-    padding:6px 12px;
+    padding:6px 14px;
     border-radius:20px;
     font-size:13px;
     font-weight:600;
@@ -41,7 +59,7 @@
 .status-absent{
     background:#f8d7da;
     color:#721c24;
-    padding:6px 12px;
+    padding:6px 14px;
     border-radius:20px;
     font-size:13px;
     font-weight:600;
@@ -50,10 +68,42 @@
 .status-pending{
     background:#ececec;
     color:#666;
-    padding:6px 12px;
+    padding:6px 14px;
     border-radius:20px;
     font-size:13px;
     font-weight:600;
+}
+
+/* Attendance radio buttons */
+
+.attendance-radio-cell{
+    vertical-align:top;
+    padding-top:18px !important;
+    justify-content: flex-end;
+}
+
+.attendance-radio-group{
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 55px;   /* Increase from 35px */
+    gap: 18px;
+}
+
+.attendance-radio-group .MuiFormControlLabel-root{
+    margin:0;
+}
+
+/* Save Button */
+.checkin-btn.Mui-disabled {
+    background-color: #81c784 !important;
+    color: #ffffff !important;
+    opacity: 0.75;
+}
+
+.checkout-btn.Mui-disabled {
+    background-color: #90caf9 !important;
+    color: #ffffff !important;
+    opacity: 0.75;
 }
 
 .attendance-btn{
@@ -63,27 +113,13 @@
 }
 
 .attendance-btn button{
-    background:#1A3E7A;
+    background:#4F7ECF;
     text-transform:none;
     border-radius:8px;
-    padding:10px 24px;
+    padding:10px 26px;
+    font-weight:600;
 }
 
 .attendance-btn button:hover{
-    background:#15325f;
-}
-.attendance-radio-cell {
-    vertical-align: top;
-    padding-top: 18px !important;
-}
-
-.attendance-radio-group {
-    display: flex;
-    justify-content: center;
-    margin-top: 8px;
-    gap: 12px;
-}
-
-.attendance-radio-group .MuiFormControlLabel-root {
-    margin: 0 10px;
+    background:#3E6FBE;
 }
