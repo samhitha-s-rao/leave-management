@@ -9,13 +9,14 @@ import {
   Typography,
   Chip,
   Button,
+  Box,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 
-const employeeHistory = [
+const myLeaveHistory = [
   {
-    id: "LR001",
+    id: "ML001",
     type: "Casual Leave",
     from: "10-Jul-2026",
     to: "12-Jul-2026",
@@ -24,28 +25,29 @@ const employeeHistory = [
     status: "Approved",
   },
   {
-    id: "LR002",
-    type: "Sick Leave",
-    from: "18-Jul-2026",
-    to: "19-Jul-2026",
-    days: 2,
-    reason: "Fever",
+    id: "ML002",
+    type: "Earned Leave",
+    from: "20-Jul-2026",
+    to: "22-Jul-2026",
+    days: 3,
+    reason: "Vacation",
     status: "Pending",
   },
   {
-    id: "LR003",
-    type: "Earned Leave",
-    from: "25-Jul-2026",
-    to: "27-Jul-2026",
-    days: 3,
-    reason: "Vacation",
+    id: "ML003",
+    type: "Sick Leave",
+    from: "28-Jul-2026",
+    to: "29-Jul-2026",
+    days: 2,
+    reason: "Fever",
     status: "Rejected",
   },
 ];
 
-const managerHistory = [
+const employeeHistory = [
   {
     employee: "John",
+    role: "Employee",
     type: "Casual Leave",
     from: "10-Jul-2026",
     to: "12-Jul-2026",
@@ -53,6 +55,7 @@ const managerHistory = [
   },
   {
     employee: "David",
+    role: "Manager",
     type: "Sick Leave",
     from: "15-Jul-2026",
     to: "16-Jul-2026",
@@ -60,6 +63,7 @@ const managerHistory = [
   },
   {
     employee: "Alex",
+    role: "Employee",
     type: "Earned Leave",
     from: "20-Jul-2026",
     to: "22-Jul-2026",
@@ -68,7 +72,8 @@ const managerHistory = [
 ];
 
 const LeaveHistory = () => {
- const navigate = useNavigate();
+  const navigate = useNavigate();
+
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
     JSON.parse(sessionStorage.getItem("user") || "null");
@@ -76,47 +81,61 @@ const LeaveHistory = () => {
   if (!user) return null;
 
   return (
-    <div style={{ padding: "30px" }}>
-         <Button
-  startIcon={<ArrowBackIcon />}
-  variant="outlined"
-  sx={{ mb: 2 }}
-  onClick={() => navigate("/dashboard")}
->
-</Button>
+    <Box sx={{ p: 4 }}>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        variant="outlined"
+        sx={{ mb: 3 }}
+        onClick={() => navigate("/dashboard")}
+      >
+        Back
+      </Button>
 
-
-      <Typography variant="h4" mb={3}>
+      <Typography variant="h4" mb={4}>
         Leave History
       </Typography>
 
-      <TableContainer component={Paper}>
+      {/* Employee */}
+      {user.role === "Employee" && (
+        <>
+          <Typography variant="h5" mb={2}>
+            My Leave History
+          </Typography>
 
-        <Table>
-
-          {user.role === "Employee" && (
-            <>
+          <TableContainer component={Paper}>
+            <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Request ID</TableCell>
-                  <TableCell>Leave Type</TableCell>
-                  <TableCell>From</TableCell>
-                  <TableCell>To</TableCell>
-                  <TableCell>Days</TableCell>
-                  <TableCell>Reason</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>
+                    <b>Request ID</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Leave Type</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>From</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>To</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Days</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Status</b>
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {employeeHistory.map((leave) => (
+                {myLeaveHistory.map((leave) => (
                   <TableRow key={leave.id}>
                     <TableCell>{leave.id}</TableCell>
                     <TableCell>{leave.type}</TableCell>
                     <TableCell>{leave.from}</TableCell>
                     <TableCell>{leave.to}</TableCell>
                     <TableCell>{leave.days}</TableCell>
-                    <TableCell>{leave.reason}</TableCell>
+
                     <TableCell>
                       <Chip
                         label={leave.status}
@@ -132,28 +151,52 @@ const LeaveHistory = () => {
                   </TableRow>
                 ))}
               </TableBody>
-            </>
-          )}
+            </Table>
+          </TableContainer>
+        </>
+      )}
 
-          {(user.role === "Manager" || user.role === "Admin") && (
-            <>
+      {/* Manager & Admin */}
+      {(user.role === "Manager" || user.role === "Admin") && (
+        <>
+          <Typography variant="h5" mb={2}>
+            My Leave History
+          </Typography>
+
+          <TableContainer component={Paper} sx={{ mb: 5 }}>
+            <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Employee</TableCell>
-                  <TableCell>Leave Type</TableCell>
-                  <TableCell>From</TableCell>
-                  <TableCell>To</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>
+                    <b>Request ID</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Leave Type</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>From</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>To</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Days</b>
+                  </TableCell>
+                  <TableCell>
+                    <b>Status</b>
+                  </TableCell>
                 </TableRow>
               </TableHead>
 
               <TableBody>
-                {managerHistory.map((leave, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{leave.employee}</TableCell>
+                {myLeaveHistory.map((leave) => (
+                  <TableRow key={leave.id}>
+                    <TableCell>{leave.id}</TableCell>
                     <TableCell>{leave.type}</TableCell>
                     <TableCell>{leave.from}</TableCell>
                     <TableCell>{leave.to}</TableCell>
+                    <TableCell>{leave.days}</TableCell>
+
                     <TableCell>
                       <Chip
                         label={leave.status}
@@ -169,14 +212,80 @@ const LeaveHistory = () => {
                   </TableRow>
                 ))}
               </TableBody>
-            </>
-          )}
+            </Table>
+          </TableContainer>
 
-        </Table>
+          <Typography variant="h5" mb={2}>
+            Employee Leave History
+          </Typography>
 
-      </TableContainer>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>
+                    <b>Employee</b>
+                  </TableCell>
 
-    </div>
+                  {user.role === "Admin" && (
+                    <TableCell>
+                      <b>Role</b>
+                    </TableCell>
+                  )}
+
+                  <TableCell>
+                    <b>Leave Type</b>
+                  </TableCell>
+
+                  <TableCell>
+                    <b>From</b>
+                  </TableCell>
+
+                  <TableCell>
+                    <b>To</b>
+                  </TableCell>
+
+                  <TableCell>
+                    <b>Status</b>
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+
+              <TableBody>
+                {employeeHistory.map((leave, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{leave.employee}</TableCell>
+
+                    {user.role === "Admin" && (
+                      <TableCell>{leave.role}</TableCell>
+                    )}
+
+                    <TableCell>{leave.type}</TableCell>
+
+                    <TableCell>{leave.from}</TableCell>
+
+                    <TableCell>{leave.to}</TableCell>
+
+                    <TableCell>
+                      <Chip
+                        label={leave.status}
+                        color={
+                          leave.status === "Approved"
+                            ? "success"
+                            : leave.status === "Pending"
+                            ? "warning"
+                            : "error"
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </>
+      )}
+    </Box>
   );
 };
 

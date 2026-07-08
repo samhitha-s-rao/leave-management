@@ -20,23 +20,6 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import './Sidebar.css';
 import type {  SidebarProps, SidebarItem } from "../../types";
 
-// Define explicit valid user roles
-// type UserRole = 'Employee' | 'Manager' | 'Admin';
-
-// // Explicitly type the props passing down from Dashboard.tsx
-// interface SidebarProps {
-//   userRole: UserRole;
-//   activeItem: string;
-//   setActiveItem: React.Dispatch<React.SetStateAction<string>>;
-// }
-
-// interface SidebarItem {
-//   text: string;
-//   icon: React.ReactNode;
-//   roles: UserRole[];
-// }
-
-// Master configuration matrix for navigation nodes
 const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     text: 'Dashboard',
@@ -56,7 +39,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   {
     text: 'View Requests',
     icon: <RateReviewIcon fontSize="small" />,
-    roles: ['Manager'], // Manager and Admin only
+    roles: ['Manager', 'Admin'], 
   },
   {
     text: 'Notification',

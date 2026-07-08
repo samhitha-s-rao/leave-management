@@ -14,8 +14,12 @@ import {
   Menu,
   MenuItem,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
-
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
@@ -59,6 +63,8 @@ const requestData = [
 const ViewRequests = () => {
     const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+const [rejectReason, setRejectReason] = useState("");
 
   const open = Boolean(anchorEl);
 
@@ -67,6 +73,35 @@ const ViewRequests = () => {
   ) => {
     setAnchorEl(event.currentTarget);
   };
+  const handleApprove = () => {
+  handleClose();
+  alert("Leave Approved");
+};
+
+const handleReject = () => {
+  handleClose();
+  setOpenRejectDialog(true);
+};
+
+const handleRejectSubmit = () => {
+  if (!rejectReason.trim()) {
+    alert("Please enter the rejection reason.");
+    return;
+  }
+
+  console.log("Reject Reason:", rejectReason);
+
+
+  setRejectReason("");
+  setOpenRejectDialog(false);
+
+  alert("Leave Rejected Successfully");
+};
+
+const handleRejectCancel = () => {
+  setRejectReason("");
+  setOpenRejectDialog(false);
+};
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -184,23 +219,57 @@ const ViewRequests = () => {
       </TableContainer>
 
       <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleClose}>
-          Approve
-        </MenuItem>
+  anchorEl={anchorEl}
+  open={open}
+  onClose={handleClose}
+>
+  <MenuItem onClick={handleApprove}>
+    Approve
+  </MenuItem>
 
-        <MenuItem onClick={handleClose}>
-          Reject
-        </MenuItem>
+  <MenuItem
+    onClick={handleReject}
+    sx={{ color: "error.main" }}
+  >
+    Reject
+  </MenuItem>
+</Menu>
+      <Dialog
+  open={openRejectDialog}
+  onClose={handleRejectCancel}
+  fullWidth
+  maxWidth="sm"
+>
+  <DialogTitle>Reject Leave Request</DialogTitle>
 
-        <MenuItem onClick={handleClose}>
-          Comment
-        </MenuItem>
-      </Menu>
-      
+  <DialogContent>
+    <TextField
+      autoFocus
+      margin="dense"
+      label="Reason for Rejection"
+      fullWidth
+      multiline
+      rows={4}
+      value={rejectReason}
+      onChange={(e) => setRejectReason(e.target.value)}
+      placeholder="Enter rejection reason..."
+    />
+  </DialogContent>
+
+  <DialogActions>
+    <Button onClick={handleRejectCancel}>
+      Cancel
+    </Button>
+
+    <Button
+      variant="contained"
+      color="error"
+      onClick={handleRejectSubmit}
+    >
+      Submit
+    </Button>
+  </DialogActions>
+</Dialog>
 
     </Box>
   );

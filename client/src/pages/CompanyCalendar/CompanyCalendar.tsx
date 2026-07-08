@@ -33,11 +33,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import type {  Holiday } from "../../types";
 import "./CompanyCalendar.css";
 
-// interface Holiday {
-//   id: number;
-//   title: string;
-//   date: string;
-// }
 
 const CompanyCalendar: React.FC = () => {
    const navigate = useNavigate();
