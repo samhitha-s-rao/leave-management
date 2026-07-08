@@ -30,14 +30,14 @@ import { useNavigate } from "react-router-dom";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DeleteIcon from "@mui/icons-material/Delete";
-
+import type {  Holiday } from "../../types";
 import "./CompanyCalendar.css";
 
-interface Holiday {
-  id: number;
-  title: string;
-  date: string;
-}
+// interface Holiday {
+//   id: number;
+//   title: string;
+//   date: string;
+// }
 
 const CompanyCalendar: React.FC = () => {
    const navigate = useNavigate();

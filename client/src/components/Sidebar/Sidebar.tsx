@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { 
   Divider,
   List, 
@@ -18,22 +18,23 @@ import RateReviewIcon from '@mui/icons-material/RateReview';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import './Sidebar.css';
+import type {  SidebarProps, SidebarItem } from "../../types";
 
 // Define explicit valid user roles
-type UserRole = 'Employee' | 'Manager' | 'Admin';
+// type UserRole = 'Employee' | 'Manager' | 'Admin';
 
-// Explicitly type the props passing down from Dashboard.tsx
-interface SidebarProps {
-  userRole: UserRole;
-  activeItem: string;
-  setActiveItem: React.Dispatch<React.SetStateAction<string>>;
-}
+// // Explicitly type the props passing down from Dashboard.tsx
+// interface SidebarProps {
+//   userRole: UserRole;
+//   activeItem: string;
+//   setActiveItem: React.Dispatch<React.SetStateAction<string>>;
+// }
 
-interface SidebarItem {
-  text: string;
-  icon: React.ReactNode;
-  roles: UserRole[];
-}
+// interface SidebarItem {
+//   text: string;
+//   icon: React.ReactNode;
+//   roles: UserRole[];
+// }
 
 // Master configuration matrix for navigation nodes
 const SIDEBAR_ITEMS: SidebarItem[] = [

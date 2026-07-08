@@ -10,10 +10,11 @@ import {
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import type {  CardProps } from "../../types";
 
-interface CardProps {
-  role: string;
-}
+// interface CardProps {
+//   role: string;
+// }
 
 const leaveData = {
   Employee: {

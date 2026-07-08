@@ -1,11 +1,12 @@
-export interface MockUser {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  role: "Employee" | "Manager" | "Admin";
-  phone: string;
-}
+import type {  MockUser } from "../types";
+// export interface MockUser {
+//   id: number;
+//   name: string;
+//   email: string;
+//   password: string;
+//   role: "Employee" | "Manager" | "Admin";
+//   phone: string;
+// }
 
 export const mockUsers: MockUser[] = [
   {
