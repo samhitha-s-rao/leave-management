@@ -4,10 +4,10 @@ import {
   Card,
   Typography,
 } from "@mui/material";
+import type { EmployeeCardProps  } from "../../types";
 
-import { employee } from "./attendenceData";
 
-const EmployeeCard = () => {
+const EmployeeCard = ({ user }: EmployeeCardProps) => {
   return (
     <Card
       sx={{
@@ -18,7 +18,7 @@ const EmployeeCard = () => {
       }}
     >
       <Avatar
-        src={employee.image}
+        // src={employee.image}
         sx={{
           width: 70,
           height: 70,
@@ -32,20 +32,20 @@ const EmployeeCard = () => {
           fontWeight="bold"
           fontSize={20}
         >
-          {employee.name} ({employee.id})
+          {user.name} 
         </Typography>
 
         <Typography>
-          {employee.designation}
+          {user.designation}
         </Typography>
 
         <Typography>
-          {employee.department}
+          {user.department}
         </Typography>
 
         <Typography mt={1}>
           Date of Joining :
-          <b> {employee.joiningDate}</b>
+          <b> {user.dateOfJoining}</b>
         </Typography>
 
       </Box>

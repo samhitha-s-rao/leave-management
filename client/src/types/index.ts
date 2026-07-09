@@ -21,8 +21,8 @@ export interface SidebarItem {
   roles: UserRole[];
 }
 
-export interface CardProps {
-  role: string;
+export interface EmployeeCardProps {
+  user: MockUser;
 }
 
 export interface Holiday {
@@ -36,12 +36,12 @@ export interface MockUser {
   name: string;
   email: string;
   password: string;
-  role: UserRole;
+  role: "Employee" | "Manager" | "Admin";
   phone: string;
-  address:string;
+  address: string;
   department: string;
   designation: string;
-  DateOfJoining: string;
+  dateOfJoining: string;
 }
 
 

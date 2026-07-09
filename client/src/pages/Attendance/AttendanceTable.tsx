@@ -11,15 +11,6 @@ import {
 
 const totalDays = 31;
 
-const rows = [
-  "Status",
-  "In Time",
-  "Out Time",
-  "Working Hrs",
-  "OT Hrs",
-  "Remarks",
-];
-
 const getStatus = (day: number) => {
   if (day === 5 || day === 12 || day === 19 || day === 26)
     return "WO";

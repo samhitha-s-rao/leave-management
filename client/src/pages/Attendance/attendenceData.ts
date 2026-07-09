@@ -5,8 +5,8 @@ export const employee = {
   department: "Development",
   location: "Mysore",
   joiningDate: "8 JULY 2026",
-  image:
-    "https://i.pravatar.cc/150?img=12",
+//   image:
+//     "https://i.pravatar.cc/150?img=12",
 };
 
 export const summary = {
@@ -18,36 +18,33 @@ export const summary = {
   totalDays: 31,
 };
 
-export const attendance = [
+export const attendanceRows = [
   {
     day: 1,
-    week: "Wed",
-    status: "P",
-    inTime: "09:05",
-    outTime: "18:05",
-    working: "9.00",
-    ot: "-",
-    remarks: "NA",
+    status: "Present",
+    inTime: "09:00",
+    outTime: "18:00",
+    workingHours: "9",
+    otHours: "0",
+    remarks: "",
   },
   {
     day: 2,
-    week: "Thu",
-    status: "P",
-    inTime: "09:02",
-    outTime: "18:10",
-    working: "9.08",
-    ot: "-",
+    status: "Present",
+    inTime: "09:00",
+    outTime: "18:00",
+    workingHours: "9",
+    otHours: "0",
     remarks: "",
   },
   {
     day: 3,
-    week: "Fri",
-    status: "P",
-    inTime: "09:10",
-    outTime: "18:07",
-    working: "8.57",
-    ot: "-",
-    remarks: "",
+    status: "Leave",
+    inTime: "-",
+    outTime: "-",
+    workingHours: "0",
+    otHours: "0",
+    remarks: "Leave",
   },
   {
     day: 4,
@@ -55,8 +52,8 @@ export const attendance = [
     status: "WO",
     inTime: "-",
     outTime: "-",
-    working: "-",
-    ot: "-",
+    workingHours: "-",
+    otHours: "-",
     remarks: "",
   },
   {
@@ -65,8 +62,8 @@ export const attendance = [
     status: "WO",
     inTime: "-",
     outTime: "-",
-    working: "-",
-    ot: "-",
+    workingHours: "-",
+    otHours: "-",
     remarks: "",
   },
   {
@@ -75,8 +72,8 @@ export const attendance = [
     status: "L",
     inTime: "-",
     outTime: "-",
-    working: "-",
-    ot: "-",
+    workingHours: "-",
+    otHours: "-",
     remarks: "CL",
   },
   {
@@ -85,8 +82,8 @@ export const attendance = [
     status: "P",
     inTime: "09:00",
     outTime: "18:00",
-    working: "9.00",
-    ot: "-",
+    workingHours: "9.00",
+    otHours: "-",
     remarks: "",
   },
 ];

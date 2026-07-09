@@ -1,13 +1,4 @@
-import type {  MockUser } from "../types";
-// export interface MockUser {
-//   id: number;
-//   name: string;
-//   email: string;
-//   password: string;
-//   role: "Employee" | "Manager" | "Admin";
-//   phone: string;
-
-// }
+import type { MockUser } from "../types";
 
 export const mockUsers: MockUser[] = [
   {
@@ -17,10 +8,10 @@ export const mockUsers: MockUser[] = [
     password: "123456",
     role: "Employee",
     phone: "123-456-7890",
-    address:"Bangalore",
+    address: "Bangalore",
     department: "Development",
     designation: "Software Engineer",
-    DateOfJoining: "2023-05-01",
+    dateOfJoining: "15-Jan-2024",
   },
   {
     id: 2,
@@ -29,10 +20,10 @@ export const mockUsers: MockUser[] = [
     password: "123456",
     role: "Manager",
     phone: "987-654-3210",
-    address:"Bangalore",
+    address: "Bangalore",
     department: "Management",
     designation: "Project Manager",
-    DateOfJoining: "2022-01-15",
+    dateOfJoining: "10-Mar-2023",
   },
   {
     id: 3,
@@ -41,9 +32,9 @@ export const mockUsers: MockUser[] = [
     password: "123456",
     role: "Admin",
     phone: "123-456-7890",
-    address:"Bangalore",
+    address: "Bangalore",
     department: "Administration",
     designation: "Administrator",
-    DateOfJoining: "2021-03-10",
+    dateOfJoining: "05-Jan-2022",
   },
 ];
