@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   Paper,
   Table,
@@ -7,9 +9,19 @@ import {
   TableHead,
   TableRow,
   Chip,
+  IconButton,  
+  Select,
+  MenuItem,
+  FormControl,
+  Stack,
 } from "@mui/material";
 
-const totalDays = 31;
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+
+const getDaysInMonth = (year: number, month: number) => {
+  return new Date(year, month + 1, 0).getDate();
+};
 
 const getStatus = (day: number) => {
   if (day === 5 || day === 12 || day === 19 || day === 26)
@@ -31,27 +43,144 @@ const getChipColor = (status: string) => {
   switch (status) {
     case "P":
       return "success";
-
     case "A":
       return "error";
-
     case "L":
       return "primary";
-
     case "WO":
       return "default";
-
     case "HD":
       return "warning";
-
     default:
       return "default";
   }
 };
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
-const AttendanceTable = () => {
+const AttendanceTable = ({
+  year = 2026,
+  month = 6,
+}) => {
+  const [selectedMonth, setSelectedMonth] = useState(month);
+const [selectedYear, setSelectedYear] = useState(year);
+
+const totalDays = getDaysInMonth(
+  selectedYear,
+  selectedMonth
+);
+
+  const [page, setPage] = useState(0);
+
+  const startDay = page === 0 ? 1 : 16;
+
+  const endDay =
+    page === 0
+      ? Math.min(15, totalDays)
+      : totalDays;
+
+  const visibleDays = Array.from(
+    {
+      length: endDay - startDay + 1,
+    },
+    (_, index) => startDay + index
+  );
+  const years = Array.from(
+  { length: 10 },
+  (_, index) => 2023 + index
+);
   return (
     <Paper elevation={2} sx={{ mt: 3 }}>
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "flex-end",
+    padding: "15px 20px 0px 20px",
+  }}
+>
+  <Stack
+    direction="row"
+    spacing={2}
+  >
+    <FormControl size="small" sx={{ minWidth: 170 }}>
+      <Select
+        value={selectedMonth}
+        onChange={(e) => {
+          setSelectedMonth(Number(e.target.value));
+          setPage(0);
+        }}
+      >
+        {months.map((monthName, index) => (
+          <MenuItem
+            key={index}
+            value={index}
+          >
+            {monthName}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+
+    <FormControl size="small" sx={{ minWidth: 120 }}>
+      <Select
+        value={selectedYear}
+        onChange={(e) => {
+          setSelectedYear(Number(e.target.value));
+          setPage(0);
+        }}
+      >
+        {years.map((year) => (
+          <MenuItem
+            key={year}
+            value={year}
+          >
+            {year}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  </Stack>
+</div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "10px 20px",
+        }}
+      >
+        <IconButton
+          disabled={page === 0}
+          onClick={() => setPage(0)}
+        >
+          <ArrowBackIosIcon />
+        </IconButton>
+
+        <b>
+          {page === 0
+            ? `Day 1 - Day ${Math.min(15, totalDays)}`
+            : `Day 16 - Day ${totalDays}`}
+        </b>
+
+        <IconButton
+          disabled={page === 1 || totalDays <= 15}
+          onClick={() => setPage(1)}
+        >
+          <ArrowForwardIosIcon />
+        </IconButton>
+      </div>
 
       <TableContainer
         sx={{
@@ -59,18 +188,14 @@ const AttendanceTable = () => {
           overflowX: "auto",
         }}
       >
-
         <Table
           stickyHeader
           sx={{
-            minWidth: 2200,
+            minWidth: 1200,
           }}
         >
-
           <TableHead>
-
             <TableRow>
-
               <TableCell
                 sx={{
                   minWidth: 180,
@@ -84,31 +209,25 @@ const AttendanceTable = () => {
                 Attendance Details
               </TableCell>
 
-              {Array.from({ length: totalDays }, (_, i) => (
-
+              {visibleDays.map((day) => (
                 <TableCell
-                  key={i}
+                  key={day}
                   align="center"
                   sx={{
                     fontWeight: "bold",
                     background: "#f5f5f5",
                   }}
                 >
-                  {i + 1}
+                  {day}
                 </TableCell>
-
               ))}
-
             </TableRow>
-
           </TableHead>
 
           <TableBody>
-
-            {/* STATUS ROW */}
+            {/* STATUS */}
 
             <TableRow>
-
               <TableCell
                 sx={{
                   fontWeight: "bold",
@@ -121,32 +240,27 @@ const AttendanceTable = () => {
                 Status
               </TableCell>
 
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                const status = getStatus(i + 1);
+              {visibleDays.map((day) => {
+                const status = getStatus(day);
 
                 return (
                   <TableCell
-                    key={i}
+                    key={day}
                     align="center"
                   >
-
                     <Chip
                       label={status}
                       color={getChipColor(status)}
                       size="small"
                     />
-
                   </TableCell>
                 );
               })}
-
             </TableRow>
 
             {/* IN TIME */}
 
             <TableRow>
-
               <TableCell
                 sx={{
                   fontWeight: "bold",
@@ -158,13 +272,12 @@ const AttendanceTable = () => {
                 In Time
               </TableCell>
 
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                const status = getStatus(i + 1);
+              {visibleDays.map((day) => {
+                const status = getStatus(day);
 
                 return (
                   <TableCell
-                    key={i}
+                    key={day}
                     align="center"
                   >
                     {status === "P"
@@ -172,15 +285,12 @@ const AttendanceTable = () => {
                       : "-"}
                   </TableCell>
                 );
-
               })}
-
             </TableRow>
 
             {/* OUT TIME */}
 
             <TableRow>
-
               <TableCell
                 sx={{
                   fontWeight: "bold",
@@ -192,13 +302,12 @@ const AttendanceTable = () => {
                 Out Time
               </TableCell>
 
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                const status = getStatus(i + 1);
+              {visibleDays.map((day) => {
+                const status = getStatus(day);
 
                 return (
                   <TableCell
-                    key={i}
+                    key={day}
                     align="center"
                   >
                     {status === "P"
@@ -206,15 +315,12 @@ const AttendanceTable = () => {
                       : "-"}
                   </TableCell>
                 );
-
               })}
-
             </TableRow>
 
             {/* WORKING HOURS */}
 
             <TableRow>
-
               <TableCell
                 sx={{
                   fontWeight: "bold",
@@ -226,13 +332,12 @@ const AttendanceTable = () => {
                 Working Hrs
               </TableCell>
 
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                const status = getStatus(i + 1);
+              {visibleDays.map((day) => {
+                const status = getStatus(day);
 
                 return (
                   <TableCell
-                    key={i}
+                    key={day}
                     align="center"
                   >
                     {status === "P"
@@ -240,168 +345,13 @@ const AttendanceTable = () => {
                       : "-"}
                   </TableCell>
                 );
-
               })}
-
             </TableRow>
-                        {/* OT HOURS */}
-
-            <TableRow>
-
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  position: "sticky",
-                  left: 0,
-                  background: "#fff",
-                }}
-              >
-                OT Hrs
-              </TableCell>
-
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                const status = getStatus(i + 1);
-
-                return (
-                  <TableCell
-                    key={i}
-                    align="center"
-                  >
-                    {status === "P"
-                      ? "0"
-                      : "-"}
-                  </TableCell>
-                );
-
-              })}
-
-            </TableRow>
-
-            {/* REMARKS */}
-
-            <TableRow>
-
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  position: "sticky",
-                  left: 0,
-                  background: "#fff",
-                }}
-              >
-                Remarks
-              </TableCell>
-
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                const status = getStatus(i + 1);
-
-                let remark = "-";
-
-                if (status === "L")
-                  remark = "Leave";
-
-                if (status === "WO")
-                  remark = "Weekend";
-
-                if (status === "A")
-                  remark = "Absent";
-
-                if (status === "HD")
-                  remark = "Half Day";
-
-                return (
-                  <TableCell
-                    key={i}
-                    align="center"
-                  >
-                    {remark}
-                  </TableCell>
-                );
-
-              })}
-
-            </TableRow>
-
-            {/* DAY COUNT */}
-
-            <TableRow>
-
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  position: "sticky",
-                  left: 0,
-                  background: "#fff",
-                }}
-              >
-                Day Count
-              </TableCell>
-
-              {Array.from({ length: totalDays }, (_, i) => (
-
-                <TableCell
-                  key={i}
-                  align="center"
-                >
-                  {i + 1}
-                </TableCell>
-
-              ))}
-
-            </TableRow>
-
-            {/* PRESENT COUNT */}
-
-            <TableRow>
-
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  position: "sticky",
-                  left: 0,
-                  background: "#fff",
-                }}
-              >
-                Present Count
-              </TableCell>
-
-              {Array.from({ length: totalDays }, (_, i) => {
-
-                let count = 0;
-
-                for (let j = 1; j <= i + 1; j++) {
-
-                  if (getStatus(j) === "P") {
-                    count++;
-                  }
-
-                }
-
-                return (
-                  <TableCell
-                    key={i}
-                    align="center"
-                  >
-                    {count}
-                  </TableCell>
-                );
-
-              })}
-
-            </TableRow>
-
           </TableBody>
-
         </Table>
-
       </TableContainer>
-
     </Paper>
-
   );
-
 };
 
 export default AttendanceTable;

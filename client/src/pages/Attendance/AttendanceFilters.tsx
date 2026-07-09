@@ -174,69 +174,7 @@ const AttendanceFilters = () => {
       </Box>
 
       {/* Filters */}
-      <Box
-        display="flex"
-        gap={2}
-        mb={3}
-        flexWrap="wrap"
-      >
-        {/* Employee */}
-        <FormControl sx={{ width: 260 }}>
-          <Select
-            value={selectedEmployee}
-            onChange={(e) => setSelectedEmployee(e.target.value)}
-          >
-            {mockUsers.map((user) => (
-              <MenuItem
-                key={user.id}
-                value={user.email}
-              >
-                {user.name} ({user.role})
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Department */}
-        <FormControl sx={{ width: 220 }}>
-          <Select
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-          >
-            <MenuItem value="All">All Departments</MenuItem>
-
-            {[...new Set(mockUsers.map((u) => u.department))].map((dept) => (
-              <MenuItem key={dept} value={dept}>
-                {dept}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {/* Location */}
-        <FormControl sx={{ width: 220 }}>
-          <Select
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          >
-            <MenuItem value="All">All Locations</MenuItem>
-
-            {[...new Set(mockUsers.map((u) => u.address))].map((loc) => (
-              <MenuItem key={loc} value={loc}>
-                {loc}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Button
-          variant="contained"
-          startIcon={<SearchIcon />}
-          onClick={handleSearch}
-        >
-          Search
-        </Button>
-      </Box>
+      
     </>
   );
 };
