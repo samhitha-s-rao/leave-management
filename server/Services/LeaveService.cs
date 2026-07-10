@@ -45,6 +45,22 @@ namespace server.Services
 
             return MapToResponseDto(createdLeave);
         }
+        public async Task<IEnumerable<LeaveHistoryDto>> GetLeaveHistoryAsync(
+            int userId)
+        {
+            var leaves =
+                await _leaveRepository.GetLeavesByUserIdAsync(userId);
+
+            return leaves.Select(l => new LeaveHistoryDto
+            {
+                LeaveRequestId = l.LeaveRequestId,
+                LeaveTypeName = l.LeaveType.LeaveTypeName,
+                StartDate = l.StartDate,
+                EndDate = l.EndDate,
+                NumberOfDays = l.NumberOfDays,
+                Status = l.Status
+            });
+}
 
         public async Task<IEnumerable<LeaveResponseDto>> GetMyLeavesAsync(
             int userId)

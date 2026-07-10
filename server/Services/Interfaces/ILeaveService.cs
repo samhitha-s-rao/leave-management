@@ -11,11 +11,16 @@ namespace server.Services.Interfaces
         Task<IEnumerable<LeaveResponseDto>> GetMyLeavesAsync(
             int userId);
 
+        Task<IEnumerable<LeaveHistoryDto>> GetLeaveHistoryAsync(int userId);
+
         Task<IEnumerable<LeaveResponseDto>> GetPendingLeavesAsync();
 
         Task<bool> ApproveOrRejectLeaveAsync(
             int leaveRequestId,
             int approverId,
             ApproveLeaveDto dto);
+
+        
+
     }
 }
