@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace server.Controllers;
 
-[Authorize(Roles = "Admin,Manager")]
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class AttendanceController : ControllerBase
@@ -11,7 +11,7 @@ public class AttendanceController : ControllerBase
     [HttpGet]
     public IActionResult GetAttendance()
     {
-        return Ok();
+        return Ok("Authenticated");
     }
 
     [HttpPost]
