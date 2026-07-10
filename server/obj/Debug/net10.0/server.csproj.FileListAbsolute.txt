@@ -6,9 +6,9 @@ D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\server.dep
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\server.runtimeconfig.json
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\server.dll
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\server.pdb
+D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\BCrypt-Net-Next.dll
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\Humanizer.dll
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\Microsoft.Build.Framework.dll
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\Microsoft.CodeAnalysis.dll
 D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\Microsoft.CodeAnalysis.CSharp.dll
@@ -132,4 +132,3 @@ D:\old files\Desktop\Leave-Management-System\server\obj\Debug\net10.0\refint\ser
 D:\old files\Desktop\Leave-Management-System\server\obj\Debug\net10.0\server.pdb
 D:\old files\Desktop\Leave-Management-System\server\obj\Debug\net10.0\server.genruntimeconfig.cache
 D:\old files\Desktop\Leave-Management-System\server\obj\Debug\net10.0\ref\server.dll
-D:\old files\Desktop\Leave-Management-System\server\bin\Debug\net10.0\BCrypt-Net-Next.dll
