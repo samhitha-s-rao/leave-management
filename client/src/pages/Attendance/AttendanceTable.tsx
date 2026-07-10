@@ -197,19 +197,22 @@ const totalDays = getDaysInMonth(
           <TableHead>
             <TableRow>
               <TableCell
-                sx={{
-                  minWidth: 180,
-                  fontWeight: "bold",
-                  background: "#f5f5f5",
-                  position: "sticky",
-                  left: 0,
-                  zIndex: 10,
-                }}
-              >
-                Attendance Details
-              </TableCell>
+              sx={{
+                minWidth: 180,
+                fontWeight: "bold",
+                background: "#f5f5f5",
+                position: "sticky",
+                left: 0,
+                zIndex: 10,
+              }}
+            >
+              {months[selectedMonth]} {selectedYear}
+            </TableCell>
 
-              {visibleDays.map((day) => (
+              {visibleDays.map((day) => {
+              const date = new Date(selectedYear, selectedMonth, day);
+
+              return (
                 <TableCell
                   key={day}
                   align="center"
@@ -218,9 +221,11 @@ const totalDays = getDaysInMonth(
                     background: "#f5f5f5",
                   }}
                 >
-                  {day}
+                  <div>{date.toLocaleDateString("en-US", { weekday: "short" })}</div>
+                  <div>{day}</div>
                 </TableCell>
-              ))}
+              );
+            })}
             </TableRow>
           </TableHead>
 

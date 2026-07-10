@@ -147,13 +147,13 @@ const AttendanceFilters = () => {
         </Box>
 
         <Box display="flex" gap={2} mt={{ xs: 2, md: 0 }}>
-          <Button
+          {/* <Button
             variant="outlined"
             startIcon={<KeyboardArrowLeftIcon />}
             endIcon={<KeyboardArrowRightIcon />}
           >
             July 2026
-          </Button>
+          </Button> */}
 
           <Button
             variant="outlined"
