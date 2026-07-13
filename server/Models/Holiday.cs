@@ -13,8 +13,5 @@ namespace server.Models
 
         [Required]
         public DateOnly HolidayDate { get; set; }
-
-        [MaxLength(255)]
-        public string? Description { get; set; }
     }
 }

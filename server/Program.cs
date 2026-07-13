@@ -92,7 +92,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         }
     };
 });
+builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
 
+builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddAuthorization();
 
 
