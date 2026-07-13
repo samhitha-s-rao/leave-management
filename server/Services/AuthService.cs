@@ -3,7 +3,7 @@ using server.DTOs.Auth;
 using server.Helpers;
 using server.Repositories.Interfaces;
 using server.Services.Interfaces;
-using server.Helpers;
+
 namespace server.Services;
 
 public class AuthService : IAuthService

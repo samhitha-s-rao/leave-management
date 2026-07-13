@@ -18,6 +18,13 @@ namespace server.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(15)]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        [MaxLength(300)]
+        public string? Address { get; set; }
+
+        [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
         public bool IsActive { get; set; } = true;
@@ -27,6 +34,7 @@ namespace server.Models
 
         public int DepartmentId { get; set; }
 
+        // Only Employees will have a Manager
         public int? ManagerId { get; set; }
 
         // Navigation Properties
