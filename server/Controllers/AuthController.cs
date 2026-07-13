@@ -1,37 +1,42 @@
 using Microsoft.AspNetCore.Mvc;
 using server.DTOs.Auth;
 using server.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 
 namespace server.Controllers;
-
-
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
+
     private readonly IAuthService _authService;
 
-    public AuthController(IAuthService authService)
+
+    public AuthController(
+        IAuthService authService)
     {
         _authService = authService;
     }
 
     [HttpPost("login")]
-    public async Task<IActionResult> Login(LoginRequestDto request)
+    public async Task<IActionResult> Login(
+        LoginRequestDto request)
     {
         try
         {
-            var response = await _authService.LoginAsync(request);
+            var result = await _authService.LoginAsync(request);
 
-            if (response == null)
+
+            if (result == null)
+            {
                 return Unauthorized(new
                 {
-                    message = "Invalid email or password."
+                    message = "Invalid email or password"
                 });
+            }
 
-            return Ok(response);
+
+            return Ok(result);
         }
         catch (Exception ex)
         {
@@ -41,4 +46,5 @@ public class AuthController : ControllerBase
             });
         }
     }
+
 }
