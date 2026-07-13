@@ -4,11 +4,9 @@ using server.Repositories.Interfaces;
 using server.Services.Interfaces;
 
 namespace server.Services
-{
-    public class LeaveService : ILeaveService
+{   public class LeaveService : ILeaveService
     {
         private readonly ILeaveRepository _leaveRepository;
-
         public LeaveService(ILeaveRepository leaveRepository)
         {
             _leaveRepository = leaveRepository;
@@ -70,15 +68,27 @@ namespace server.Services
 
             return leaves.Select(MapToResponseDto);
         }
-
-        public async Task<IEnumerable<LeaveResponseDto>> GetPendingLeavesAsync()
+                public async Task<IEnumerable<LeaveResponseDto>> GetPendingLeavesAsync(
+            int approverId,
+            string approverRole)
         {
-            var leaves =
-                await _leaveRepository.GetAllPendingLeavesAsync();
+            var leaves = await _leaveRepository.GetPendingLeavesAsync(
+                approverId,
+                approverRole);
 
             return leaves.Select(MapToResponseDto);
         }
+        public async Task<LeaveResponseDto> GetLeaveByIdAsync(int leaveId)
+{
+            var leave = await _leaveRepository.GetLeaveByIdAsync(leaveId);
 
+            if (leave == null)
+            {
+                throw new KeyNotFoundException($"Leave request with Id {leaveId} not found.");
+            }
+
+            return MapToResponseDto(leave);
+        }
         public async Task<bool> ApproveOrRejectLeaveAsync(
             int leaveRequestId,
             int approverId,
@@ -88,7 +98,7 @@ namespace server.Services
                 await _leaveRepository.GetLeaveByIdAsync(leaveRequestId);
 
             if (leave == null)
-            {
+            {          
                 return false;
             }
 

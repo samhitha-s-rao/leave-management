@@ -71,8 +71,20 @@ namespace server.Controllers
         [HttpGet("pending")]
         public async Task<IActionResult> GetPendingLeaves()
         {
-            var leaves =
-                await _leaveService.GetPendingLeavesAsync();
+            var approverIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var approverRole = User.FindFirstValue(ClaimTypes.Role);
+
+            if (!int.TryParse(approverIdClaim, out int approverId))
+            {
+                return Unauthorized(new
+                {
+                    message = "Invalid user token."
+                });
+            }
+
+            var leaves = await _leaveService.GetPendingLeavesAsync(
+                approverId,
+                approverRole!);
 
             return Ok(leaves);
         }

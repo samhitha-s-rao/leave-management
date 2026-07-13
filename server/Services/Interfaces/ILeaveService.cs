@@ -13,7 +13,11 @@ namespace server.Services.Interfaces
 
         Task<IEnumerable<LeaveHistoryDto>> GetLeaveHistoryAsync(int userId);
 
-        Task<IEnumerable<LeaveResponseDto>> GetPendingLeavesAsync();
+        Task<IEnumerable<LeaveResponseDto>> GetPendingLeavesAsync(
+        int approverId,
+        string approverRole);
+        
+        Task<LeaveResponseDto> GetLeaveByIdAsync(int leaveId);
 
         Task<bool> ApproveOrRejectLeaveAsync(
             int leaveRequestId,
@@ -21,6 +25,11 @@ namespace server.Services.Interfaces
             ApproveLeaveDto dto);
 
         
+
+
+
+
+
 
     }
 }

@@ -8,7 +8,9 @@ namespace server.Repositories.Interfaces
     {
         Task<LeaveRequest> ApplyLeaveAsync(LeaveRequest leaveRequest);
         Task<IEnumerable<LeaveRequest>> GetLeavesByUserIdAsync(int userId);
-        Task<IEnumerable<LeaveRequest>> GetAllPendingLeavesAsync();
+        Task<IEnumerable<LeaveRequest>> GetPendingLeavesAsync(
+            int approverId,
+            string approverRole);
         Task<LeaveRequest?> GetLeaveByIdAsync(int leaveRequestId);
         Task UpdateLeaveAsync(LeaveRequest leaveRequest);
     }

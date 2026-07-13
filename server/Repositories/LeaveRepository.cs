@@ -32,12 +32,31 @@ namespace server.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<LeaveRequest>> GetAllPendingLeavesAsync()
+        public async Task<IEnumerable<LeaveRequest>> GetPendingLeavesAsync(
+            int approverId,
+            string approverRole)
         {
-            return await _context.LeaveRequests
+            var query = _context.LeaveRequests
                 .Include(l => l.User)
+                    .ThenInclude(u => u.Role)
                 .Include(l => l.LeaveType)
-                .Where(l => l.Status == "Pending")
+                .Where(l => l.Status == "Pending");
+
+            if (approverRole == "Manager")
+            {
+                // Current requirement:
+                query = query.Where(l => l.User.Role.RoleName == "Employee");
+
+                // Future:
+                // query = query.Where(l =>
+                //     l.User.ManagerId == approverId);
+            }
+            else if (approverRole == "Admin")
+            {
+                query = query.Where(l => l.User.Role.RoleName == "Manager");
+            }
+
+            return await query
                 .OrderByDescending(l => l.LeaveRequestId)
                 .ToListAsync();
         }
