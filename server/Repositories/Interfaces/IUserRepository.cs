@@ -1,14 +1,29 @@
 using server.Models;
 
-namespace server.Repositories.Interfaces;
-
-public interface IUserRepository
+namespace server.Repositories.Interfaces
 {
-    Task<User?> GetUserByEmailAsync(string email);
+    public interface IUserRepository
+    {
+        Task<IEnumerable<User>> GetAllAsync();
 
-    Task<User?> GetUserByIdAsync(int userId);
+        Task<User?> GetByIdAsync(int id);
 
-    Task AddUserAsync(User user);
+        Task<User?> GetByEmailAsync(string email);
 
-    Task SaveChangesAsync();
+        Task<IEnumerable<User>> GetAdminsAsync();
+
+        Task<IEnumerable<User>> GetManagersAsync();
+
+        Task<IEnumerable<User>> GetEmployeesAsync();
+
+        Task<User> CreateAsync(User user);
+
+        Task<User> UpdateAsync(User user);
+
+        Task DeactivateAsync(User user);
+
+        Task<bool> EmailExistsAsync(string email);
+
+        Task<bool> ExistsAsync(int id);
+    }
 }

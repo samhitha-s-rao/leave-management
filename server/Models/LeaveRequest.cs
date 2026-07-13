@@ -7,6 +7,7 @@ namespace server.Models
 {
     public int LeaveRequestId { get; set; }
 
+
     public int UserId { get; set; }
 
     public int LeaveTypeId { get; set; }
