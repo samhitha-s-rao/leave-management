@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,87 +8,168 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import "./ApplyLeave.css";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
+import "./ApplyLeave.css";
 
+import {
+  applyLeave,
+  getLeaveTypes,
+} from "../../services/leaveService";
 
-const leaveTypes = [
-  "Casual Leave",
-  "Sick Leave",
-  "Earned Leave",
-  // 
-  
-];
-
-const ApplyLeave = () => {
-   const navigate = useNavigate();
-  const [leaveType, setLeaveType] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [reason, setReason] = useState("");
-const [leaveDuration, setLeaveDuration] = useState("Full Day");
-  const calculateDays = () => {
-  if (!startDate || !endDate) return "";
-
-  if (leaveDuration === "Half Day") {
-    return 0.5;
-  }
-
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  const diff =
-    (end.getTime() - start.getTime()) /
-    (1000 * 60 * 60 * 24);
-
-  return diff >= 0 ? diff + 1 : "";
-};
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!leaveType || !startDate || !endDate || !reason) {
-      alert("Please fill all fields.");
-      return;
-    }
-    
-    if (leaveDuration === "Half Day" && startDate !== endDate) {
-  alert("Half Day leave can only be applied for a single day.");
-  return;
+interface LeaveType {
+  leaveTypeId: number;
+  leaveTypeName: string;
+  allocatedLeaves: number;
 }
 
-    alert("Leave Applied Successfully (Mock)");
+const ApplyLeave = () => {
+  const navigate = useNavigate();
 
-    setLeaveType("");
-    setStartDate("");
-    setEndDate("");
-    setReason("");
+  const [leaveTypes, setLeaveTypes] =
+    useState<LeaveType[]>([]);
+
+  const [leaveTypeId, setLeaveTypeId] =
+    useState<number | "">("");
+
+  const [leaveDuration, setLeaveDuration] =
+    useState("Full Day");
+
+  const [startDate, setStartDate] =
+    useState("");
+
+  const [endDate, setEndDate] =
+    useState("");
+
+  const [reason, setReason] =
+    useState("");
+
+  useEffect(() => {
+    loadLeaveTypes();
+  }, []);
+
+  const loadLeaveTypes = async () => {
+    try {
+      const response =
+        await getLeaveTypes();
+
+      setLeaveTypes(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Unable to load leave types.");
+    }
+  };
+
+  const calculateDays = () => {
+    if (!startDate || !endDate)
+      return 0;
+
+    if (leaveDuration === "Half Day")
+      return 0.5;
+
+    const start =
+      new Date(startDate);
+
+    const end =
+      new Date(endDate);
+
+    const diff =
+      (end.getTime() -
+        start.getTime()) /
+      (1000 * 60 * 60 * 24);
+
+    return diff >= 0
+      ? diff + 1
+      : 0;
   };
 
   const handleReset = () => {
-    setLeaveType("");
+    setLeaveTypeId("");
+    setLeaveDuration("Full Day");
     setStartDate("");
     setEndDate("");
     setReason("");
   };
 
-  return (
-    <Paper elevation={2} className="apply-card">
-<Button
-  startIcon={<ArrowBackIcon />}
-  variant="outlined"
-  sx={{ mb: 2 }}
-  onClick={() => navigate("/dashboard")}
->
-</Button>
+  const handleSubmit = async (
+    e: React.FormEvent
+  ) => {
+    e.preventDefault();
 
-      <Typography variant="h4" className="page-title">
+    if (
+      !leaveTypeId ||
+      !startDate ||
+      !endDate ||
+      !reason
+    ) {
+      alert(
+        "Please fill all fields."
+      );
+      return;
+    }
+
+    if (
+      leaveDuration ===
+        "Half Day" &&
+      startDate !== endDate
+    ) {
+      alert(
+        "Half Day leave can only be applied for a single day."
+      );
+      return;
+    }
+
+    try {
+      await applyLeave({
+        leaveTypeId,
+        startDate,
+        endDate,
+        leaveDuration,
+        reason,
+      });
+
+      alert(
+        "Leave applied successfully."
+      );
+
+      handleReset();
+    } catch (error: any) {
+      console.error(error);
+
+      alert(
+        error.response?.data
+          ?.message ??
+          "Failed to apply leave."
+      );
+    }
+  };
+
+  return (
+    <Paper
+      elevation={2}
+      className="apply-card"
+    >
+      <Button
+        startIcon={
+          <ArrowBackIcon />
+        }
+        variant="outlined"
+        sx={{ mb: 2 }}
+        onClick={() =>
+          navigate("/dashboard")
+        }
+      />
+
+      <Typography
+        variant="h4"
+        className="page-title"
+      >
         Apply Leave
       </Typography>
 
       <Typography className="page-subtitle">
-        Submit a leave request for approval.
+        Submit a leave request
+        for approval.
       </Typography>
 
       <Box
@@ -96,85 +177,151 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
         onSubmit={handleSubmit}
         className="leave-form"
       >
+        <Grid
+          container
+          spacing={3}
+        >
+          {/* Leave Type */}
 
-        <Grid container spacing={3}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <TextField
+              select
+              fullWidth
+              label="Leave Type"
+              value={leaveTypeId}
+              onChange={(e) => {
+                setLeaveTypeId(
+                  Number(
+                    e.target.value
+                  )
+                );
 
-{/* Leave Type */}
-<Grid size={{ xs: 12, md: 6 }}>
-<TextField
-  select
-  fullWidth
-  label="Leave Type"
-  value={leaveType}
-  onChange={(e) => {
-    setLeaveType(e.target.value);
+                setStartDate("");
+                setEndDate("");
+              }}
+            >
+              {leaveTypes.map(
+                (type) => (
+                  <MenuItem
+                    key={
+                      type.leaveTypeId
+                    }
+                    value={
+                      type.leaveTypeId
+                    }
+                  >
+                    {
+                      type.leaveTypeName
+                    }
+                  </MenuItem>
+                )
+              )}
+            </TextField>
+          </Grid>
 
-    // Reset dates whenever leave type changes
-    setStartDate("");
-    setEndDate("");
-  }}
->
-  {leaveTypes.map((type) => (
-    <MenuItem key={type} value={type}>
-      {type}
-    </MenuItem>
-  ))}
-</TextField>
-</Grid>
+          {/* Leave Duration */}
 
-{/* Leave Duration */}
-<Grid size={{ xs: 12, md: 6 }}>
-  <TextField
-    select
-    fullWidth
-    label="Leave Duration"
-    value={leaveDuration}
-    onChange={(e) => setLeaveDuration(e.target.value)}
-  >
-    <MenuItem value="Full Day">Full Day</MenuItem>
-    <MenuItem value="Half Day">Half Day</MenuItem>
-  </TextField>
-</Grid>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <TextField
+              select
+              fullWidth
+              label="Leave Duration"
+              value={
+                leaveDuration
+              }
+              onChange={(e) =>
+                setLeaveDuration(
+                  e.target.value
+                )
+              }
+            >
+              <MenuItem value="Full Day">
+                Full Day
+              </MenuItem>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-  <TextField
-    fullWidth
-    type="date"
-    label="Start Date"
-    value={startDate}
-    onChange={(e) => setStartDate(e.target.value)}
-    InputLabelProps={{
-      shrink: true,
-    }}
-    inputProps={{
-      min:
-        leaveType === "Sick Leave"
-          ? undefined
-          : new Date().toISOString().split("T")[0],
-    }}
-  />
-</Grid>
+              <MenuItem value="Half Day">
+                Half Day
+              </MenuItem>
+            </TextField>
+          </Grid>
 
-        <Grid size={{ xs: 12, md: 6 }}>
-  <TextField
-    fullWidth
-    type="date"
-    label="End Date"
-    value={endDate}
-    onChange={(e) => setEndDate(e.target.value)}
-    InputLabelProps={{
-      shrink: true,
-    }}
-    inputProps={{
-      min:
-        leaveType === "Sick Leave"
-          ? undefined
-          : startDate || new Date().toISOString().split("T")[0],
-    }}
-  />
-</Grid>
+          {/* Start Date */}
 
-          <Grid size={12}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <TextField
+              fullWidth
+              type="date"
+              label="Start Date"
+              value={startDate}
+              onChange={(e) =>
+                setStartDate(
+                  e.target.value
+                )
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                min: new Date()
+                  .toISOString()
+                  .split("T")[0],
+              }}
+            />
+          </Grid>
+
+          {/* End Date */}
+
+          <Grid
+            size={{
+              xs: 12,
+              md: 6,
+            }}
+          >
+            <TextField
+              fullWidth
+              type="date"
+              label="End Date"
+              value={endDate}
+              onChange={(e) =>
+                setEndDate(
+                  e.target.value
+                )
+              }
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                min:
+                  startDate ||
+                  new Date()
+                    .toISOString()
+                    .split(
+                      "T"
+                    )[0],
+              }}
+            />
+          </Grid>
+
+          {/* Reason */}
+
+          <Grid
+            size={12}
+          >
             <TextField
               fullWidth
               multiline
@@ -182,29 +329,36 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
               label="Reason"
               value={reason}
               onChange={(e) =>
-                setReason(e.target.value)
+                setReason(
+                  e.target.value
+                )
               }
             />
           </Grid>
-          <Grid size={12}>
-  <div className="days-card">
-    <Typography className="days-title">
-      Number of Days
-    </Typography>
 
-    <Typography className="days-value">
-      {calculateDays() || 0}
-    </Typography>
-  </div>
-</Grid>
+          {/* Days */}
 
+          <Grid
+            size={12}
+          >
+            <div className="days-card">
+              <Typography className="days-title">
+                Number of Days
+              </Typography>
+
+              <Typography className="days-value">
+                {calculateDays()}
+              </Typography>
+            </div>
+          </Grid>
         </Grid>
 
         <div className="button-group">
-
           <Button
             variant="outlined"
-            onClick={handleReset}
+            onClick={
+              handleReset
+            }
           >
             Reset
           </Button>
@@ -215,11 +369,8 @@ const [leaveDuration, setLeaveDuration] = useState("Full Day");
           >
             Apply Leave
           </Button>
-
         </div>
-
       </Box>
-
     </Paper>
   );
 };

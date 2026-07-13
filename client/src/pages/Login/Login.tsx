@@ -24,7 +24,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { mockUsers } from "../../mock/users";
+import { loginUser } from "../../api/authApi";
 
 
 const Login: React.FC = () => {
@@ -39,66 +39,101 @@ const Login: React.FC = () => {
   const [openForgotPassword, setOpenForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
   e.preventDefault();
 
-  // Check if fields are empty
+
   if (!email.trim() || !password.trim()) {
     toast.error("Please enter Email and Password");
     return;
   }
 
-  // Validate against mock users
-  const user = mockUsers.find(
-    (u) =>
-      u.email.toLowerCase() === email.trim().toLowerCase() &&
-      u.password === password.trim()
-  );
 
-  // Invalid credentials
-  if (!user) {
-    toast.error("Invalid Credentials");
-    return;
+  try {
+
+    const response = await loginUser({
+      email: email.trim(),
+      password: password.trim()
+    });
+
+
+    // clear old session
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("user");
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+    const userData = {
+      userId: response.userId,
+      name: response.name,
+      email: response.email,
+      role: response.role
+    };
+
+    if (rememberMe) {
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(userData)
+      );
+      localStorage.setItem(
+        "token",
+        response.token
+      );
+    } 
+    else {
+
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify(userData)
+      );
+
+      sessionStorage.setItem(
+        "token",
+        response.token
+      );
+    }
+
+
+    toast.success("Login Successful");
+
+
+    navigate("/dashboard");
+  } 
+  catch(error:any) {
+
+    if(error.response?.status === 401)
+    {
+      toast.error("Invalid Email or Password");
+    }
+    else if(error.response?.data)
+    {
+      toast.error(error.response.data);
+    }
+    else
+    {
+      toast.error("Something went wrong");
+    }
+
   }
-localStorage.removeItem("user");
-sessionStorage.removeItem("user");
 
-  // Store logged-in user
-  if (rememberMe) {
-    localStorage.setItem("user", JSON.stringify(user));
-  } else {
-    console.log(user);
-    sessionStorage.setItem("user", JSON.stringify(user));
-  }
-
-  toast.success("Login Successful");
-
-  // Navigate based on role
-  navigate("/dashboard");
-  };
+};
 
   const handleForgotPassword = () => {
-    if (!forgotEmail.trim()) {
-      toast.error("Please enter your email");
-      return;
-    }
 
-    const user = mockUsers.find(
-      (u) => u.email.toLowerCase() === forgotEmail.toLowerCase()
-    );
+  if (!forgotEmail.trim()) {
+    toast.error("Please enter your email");
+    return;
+  }
 
-    if (!user) {
-      toast.error("Email not found");
-      return;
-    }
 
-    toast.info(
-      "Password reset is not available in Mock Authentication."
-    );
+  toast.info(
+    "Password reset feature will be available after backend integration."
+  );
 
-    setForgotEmail("");
-    setOpenForgotPassword(false);
-  };
+
+  setForgotEmail("");
+  setOpenForgotPassword(false);
+};
 
   return (
     <div className="login-container">
