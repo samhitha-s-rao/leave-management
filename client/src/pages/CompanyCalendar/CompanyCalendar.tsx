@@ -91,30 +91,60 @@ const token =
   };
 
   const handleDateClick = (date: Date) => {
-  if (
-    role === "Admin" &&
-    !isBefore(date, today)
-  ) {
-    setSelectedDate(date);
+  if (role !== "Admin" || isBefore(date, today)) return;
+
+  const existingHoliday = holidays.find((holiday) =>
+    isSameDay(new Date(holiday.date), date)
+  );
+
+  if (existingHoliday) {
+    // Pre-fill the textbox with the existing holiday name
+    setHolidayName(existingHoliday.title);
+  } else {
+    // Empty textbox for a new holiday
+    setHolidayName("");
   }
+
+  setSelectedDate(date);
 };
 
   const handleAddHoliday = async () => {
   if (!selectedDate || !holidayName.trim()) return;
 
+  const existingHoliday = holidays.find((holiday) =>
+    isSameDay(new Date(holiday.date), selectedDate)
+  );
+
   try {
-    await axios.post(
-      API,
-      {
-        holidayName: holidayName,
-        holidayDate: format(selectedDate, "yyyy-MM-dd"),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    if (existingHoliday) {
+      // Update existing holiday
+      await axios.put(
+        `${API}/${existingHoliday.id}`,
+        {
+          holidayName: holidayName,
+          holidayDate: format(selectedDate, "yyyy-MM-dd"),
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    } else {
+      // Add new holiday
+      await axios.post(
+        API,
+        {
+          holidayName: holidayName,
+          holidayDate: format(selectedDate, "yyyy-MM-dd"),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    }
 
     await loadHolidays();
 
@@ -143,6 +173,11 @@ const loadHolidays = async () => {
     console.error(err);
   }
 };
+useEffect(() => {
+  if (token) {
+    loadHolidays();
+  }
+}, [token]);
   const handleDeleteHoliday = async (id: number) => {
   try {
     await axios.delete(`${API}/${id}`, {
@@ -300,7 +335,6 @@ const loadHolidays = async () => {
         </Box>
       </Paper>
 
-      {/* Add Holiday Dialog */}
 
       <Dialog
         open={Boolean(selectedDate)}
@@ -341,11 +375,16 @@ const loadHolidays = async () => {
           </Button>
 
           <Button
-            variant="contained"
-            onClick={handleAddHoliday}
-          >
-            Add Holiday
-          </Button>
+  variant="contained"
+  onClick={handleAddHoliday}
+>
+  {holidays.some((holiday) =>
+    selectedDate &&
+    isSameDay(new Date(holiday.date), selectedDate)
+  )
+    ? "Update Holiday"
+    : "Add Holiday"}
+</Button>
         </DialogActions>
       </Dialog>
     </Box>
