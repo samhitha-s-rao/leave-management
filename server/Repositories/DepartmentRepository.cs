@@ -26,5 +26,10 @@ namespace server.Repositories
             return await _context.Departments
                 .FirstOrDefaultAsync(d => d.DepartmentId == departmentId);
         }
+        public async Task<bool> ExistsAsync(int departmentId)
+{
+    return await _context.Departments
+        .AnyAsync(d => d.DepartmentId == departmentId);
+}
     }
 }

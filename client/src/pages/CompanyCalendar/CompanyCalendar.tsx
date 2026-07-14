@@ -34,7 +34,10 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import DeleteIcon from "@mui/icons-material/Delete";
 import type {  Holiday } from "../../types";
 import "./CompanyCalendar.css";
+import  {  useEffect } from "react";
+import axios from "axios";
 
+const API = "http://localhost:5238/api/Holiday";
 
 const CompanyCalendar: React.FC = () => {
    const navigate = useNavigate();
@@ -46,23 +49,10 @@ const CompanyCalendar: React.FC = () => {
 
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const [holidays, setHolidays] = useState<Holiday[]>([
-    {
-      id: 1,
-      title: "Republic Day",
-      date: "2026-01-26",
-    },
-    {
-      id: 2,
-      title: "Independence Day",
-      date: "2026-08-15",
-    },
-    {
-      id: 3,
-      title: "Gandhi Jayanti",
-      date: "2026-10-02",
-    },
-  ]);
+const [holidays, setHolidays] = useState<Holiday[]>([]);
+const token =
+  localStorage.getItem("token") ||
+  sessionStorage.getItem("token");
 
   const [selectedDate, setSelectedDate] =
     useState<Date | null>(null);
@@ -109,34 +99,63 @@ const CompanyCalendar: React.FC = () => {
   }
 };
 
-  const handleAddHoliday = () => {
-    if (!selectedDate || !holidayName.trim()) {
-      return;
-    }
+  const handleAddHoliday = async () => {
+  if (!selectedDate || !holidayName.trim()) return;
 
-    const holidayDate = format(
-      selectedDate,
-      "yyyy-MM-dd"
+  try {
+    await axios.post(
+      API,
+      {
+        holidayName: holidayName,
+        holidayDate: format(selectedDate, "yyyy-MM-dd"),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
     );
 
-    setHolidays([
-      ...holidays,
-      {
-        id: Date.now(),
-        title: holidayName,
-        date: holidayDate,
-      },
-    ]);
+    await loadHolidays();
 
     setHolidayName("");
     setSelectedDate(null);
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
+const loadHolidays = async () => {
+  try {
+    const res = await axios.get(API, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const handleDeleteHoliday = (id: number) => {
-    setHolidays(
-      holidays.filter((holiday) => holiday.id !== id)
-    );
-  };
+    const holidayData = res.data.map((item: any) => ({
+      id: item.holidayId,
+      title: item.holidayName,
+      date: item.holidayDate,
+    }));
+
+    setHolidays(holidayData);
+  } catch (err) {
+    console.error(err);
+  }
+};
+  const handleDeleteHoliday = async (id: number) => {
+  try {
+    await axios.delete(`${API}/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    await loadHolidays();
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   const closeDialog = () => {
     setSelectedDate(null);

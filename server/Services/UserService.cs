@@ -26,8 +26,85 @@ namespace server.Services
             _departmentRepository = departmentRepository;
             _mapper = mapper;
         }
+        public async Task<IEnumerable<ManagerDto>> GetManagersAsync()
+        {
+            var managers = await _userRepository.GetManagersAsync();
+
+            return _mapper.Map<IEnumerable<ManagerDto>>(managers);
+        }
+        public async Task<IEnumerable<ManagerDto>> GetAdminsAsync()
+        {
+            var admins = await _userRepository.GetAdminsAsync();
+
+            return _mapper.Map<IEnumerable<ManagerDto>>(admins);
+        }
 
         #region Private Validation Methods
+        public async Task<IEnumerable<UserDto>> GetAllAsync()
+        {
+            var users = await _userRepository.GetActiveUsersAsync();
+
+            return _mapper.Map<IEnumerable<UserDto>>(users);
+        }
+
+        public async Task<UserDto?> GetByIdAsync(int id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+
+            if (user == null)
+                return null;
+
+            return _mapper.Map<UserDto>(user);
+        }
+        public async Task<UserDto> CreateAsync(CreateUserDto dto)
+        {
+            await ValidateEmailAsync(dto.Email);
+            await ValidateRoleAsync(dto.RoleId);
+            await ValidateDepartmentAsync(dto.DepartmentId);
+            await ValidateHierarchyAsync(dto.RoleId, dto.ManagerId);
+            var user = _mapper.Map<User>(dto);
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+
+            user.IsActive = true;
+
+            user = await _userRepository.CreateAsync(user);
+
+            user = await _userRepository.GetByIdAsync(user.UserId)
+                ?? throw new Exception("Failed to retrieve created user.");
+
+            return _mapper.Map<UserDto>(user);
+        }
+public async Task<UserDto> UpdateAsync(int id, UpdateUserDto dto)
+{
+    if (dto.ManagerId == id)
+        throw new Exception("A user cannot be their own manager.");
+
+    var user = await _userRepository.GetByIdAsync(id)
+        ?? throw new Exception("User not found.");
+
+    await ValidateRoleAsync(dto.RoleId);
+    await ValidateDepartmentAsync(dto.DepartmentId);
+    await ValidateHierarchyAsync(dto.RoleId, dto.ManagerId);
+
+    _mapper.Map(dto, user);
+
+    user = await _userRepository.UpdateAsync(user);
+
+    user = await _userRepository.GetByIdAsync(user.UserId)
+        ?? throw new Exception("Failed to retrieve updated user.");
+
+    return _mapper.Map<UserDto>(user);
+}
+public async Task DeactivateAsync(int id)
+{
+    var user = await _userRepository.GetByIdAsync(id);
+
+    if (user == null)
+        throw new Exception("User not found.");
+
+    await _userRepository.DeactivateAsync(user);
+}
+#endregion
 
         private async Task ValidateRoleAsync(int roleId)
         {
@@ -87,5 +164,6 @@ namespace server.Services
                     throw new Exception("Invalid role.");
             }
         }
+    }
+}
 
-        #endregi

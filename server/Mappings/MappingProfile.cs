@@ -10,29 +10,29 @@ namespace server.Mappings
     {
         public MappingProfile()
         {
-            // User
-CreateMap<User, UserDto>()
-    .ForMember(dest => dest.RoleName,
-        opt => opt.MapFrom(src => src.Role.RoleName))
-    .ForMember(dest => dest.DepartmentName,
-        opt => opt.MapFrom(src => src.Department.DepartmentName))
-    .ForMember(dest => dest.ManagerName,
-        opt => opt.MapFrom(src =>
-            src.Manager != null ? src.Manager.Name : null));
+            // ==========================
+            // User Mappings
+            // ==========================
+
+            CreateMap<User, UserDto>()
+                .ForMember(dest => dest.RoleName,
+                    opt => opt.MapFrom(src => src.Role.RoleName))
+                .ForMember(dest => dest.DepartmentName,
+                    opt => opt.MapFrom(src => src.Department.DepartmentName))
+                .ForMember(dest => dest.ManagerName,
+                    opt => opt.MapFrom(src =>
+                        src.Manager != null ? src.Manager.Name : null));
+
+            CreateMap<User, ManagerDto>();
 
             CreateMap<CreateUserDto, User>()
                 .ForMember(dest => dest.PasswordHash,
                     opt => opt.Ignore());
 
-            
-CreateMap<UpdateUserDto, User>()
-    .ForMember(dest => dest.PasswordHash,
-        opt => opt.Ignore());
-
-            // Role
+            CreateMap<UpdateUserDto, User>()
+                .ForMember(dest => dest.PasswordHash,
+                    opt => opt.Ignore());
             CreateMap<Role, RoleDto>();
-
-            // Department
             CreateMap<Department, DepartmentDto>();
         }
     }

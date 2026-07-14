@@ -305,8 +305,16 @@ namespace server.Migrations
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
+                    b.Property<DateOnly>("DateOfJoining")
+                        .HasColumnType("date");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Designation")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -356,7 +364,9 @@ namespace server.Migrations
                         new
                         {
                             UserId = 1,
+                            DateOfJoining = new DateOnly(1, 1, 1),
                             DepartmentId = 1,
+                            Designation = "",
                             Email = "admin@test.com",
                             IsActive = true,
                             Name = "Admin User",
@@ -367,7 +377,9 @@ namespace server.Migrations
                         new
                         {
                             UserId = 2,
+                            DateOfJoining = new DateOnly(1, 1, 1),
                             DepartmentId = 2,
+                            Designation = "",
                             Email = "manager@test.com",
                             IsActive = true,
                             Name = "Jane Smith",
@@ -378,7 +390,9 @@ namespace server.Migrations
                         new
                         {
                             UserId = 3,
+                            DateOfJoining = new DateOnly(1, 1, 1),
                             DepartmentId = 2,
+                            Designation = "",
                             Email = "employee@test.com",
                             IsActive = true,
                             ManagerId = 2,
