@@ -7,7 +7,6 @@ namespace server.Models
 {
     public int LeaveRequestId { get; set; }
 
-
     public int UserId { get; set; }
 
     public int LeaveTypeId { get; set; }
@@ -34,6 +33,7 @@ namespace server.Models
 
     // Optional: when the action was taken
     public DateTime? ActionDate { get; set; }
+    public DateTime CreatedDate { get; set; }
 
     public User User { get; set; } = null!;
 

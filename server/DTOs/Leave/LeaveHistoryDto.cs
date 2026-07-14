@@ -15,3 +15,4 @@ namespace server.DTOs.Leave
         public string Status { get; set; } = string.Empty;
     }
 }
+

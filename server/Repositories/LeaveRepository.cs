@@ -26,6 +26,7 @@ namespace server.Repositories
         {
             return await _context.LeaveRequests
                 .Include(l => l.User)
+                .ThenInclude(u => u.Department)
                 .Include(l => l.LeaveType)
                 .Where(l => l.UserId == userId)
                 .OrderByDescending(l => l.LeaveRequestId)
@@ -36,11 +37,13 @@ namespace server.Repositories
             int approverId,
             string approverRole)
         {
-            var query = _context.LeaveRequests
-                .Include(l => l.User)
-                    .ThenInclude(u => u.Role)
-                .Include(l => l.LeaveType)
-                .Where(l => l.Status == "Pending");
+            IQueryable<LeaveRequest> query = _context.LeaveRequests
+            .Include(l => l.User)
+                .ThenInclude(u => u.Role)
+            .Include(l => l.User)
+                .ThenInclude(u => u.Department)
+            .Include(l => l.LeaveType)
+            .Where(l => l.Status == "Pending");
 
             if (approverRole == "Manager")
             {
@@ -65,6 +68,7 @@ namespace server.Repositories
         {
             return await _context.LeaveRequests
                 .Include(l => l.User)
+                .ThenInclude(u=>u.Department)
                 .Include(l => l.LeaveType)
                 .FirstOrDefaultAsync(l => l.LeaveRequestId == leaveRequestId);
         }

@@ -1,5 +1,4 @@
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -24,98 +23,126 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 
-const requestData = [
-  {
-    id: "EMP001",
-    name: "John Doe",
-    department: "IT",
-    leaveType: "Casual Leave",
-    fromDate: "10-Jul-2026",
-    toDate: "12-Jul-2026",
-    days: 3,
-    reason: "Family Function",
-    appliedOn: "05-Jul-2026",
-  },
-  {
-    id: "EMP002",
-    name: "Jane Smith",
-    department: "HR",
-    leaveType: "Sick Leave",
-    fromDate: "18-Jul-2026",
-    toDate: "19-Jul-2026",
-    days: 2,
-    reason: "Fever",
-    appliedOn: "17-Jul-2026",
-  },
-  {
-    id: "EMP003",
-    name: "Samhitha S Roa",
-    department: "Finance",
-    leaveType: "Earned Leave",
-    fromDate: "25-Jul-2026",
-    toDate: "27-Jul-2026",
-    days: 3,
-    reason: "Vacation",
-    appliedOn: "20-Jul-2026",
-  },
-];
+import {
+  getPendingLeaves,
+  leaveDecision,
+} from "../../services/leaveService";
+
+interface LeaveRequest {
+  leaveRequestId: number;
+  userId: number;
+  userName: string;
+  departmentName: string;
+  leaveTypeName: string;
+  startDate: string;
+  endDate: string;
+  numberOfDays: number;
+  reason: string;
+  appliedDate: string | null;
+}
 
 const ViewRequests = () => {
-    const navigate = useNavigate();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [openRejectDialog, setOpenRejectDialog] = useState(false);
-const [rejectReason, setRejectReason] = useState("");
+  const navigate = useNavigate();
 
-  const open = Boolean(anchorEl);
+  const [requests, setRequests] = useState<LeaveRequest[]>([]);
+  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+
+  const [rejectReason, setRejectReason] = useState("");
+
+  useEffect(() => {
+    loadPendingRequests();
+  }, []);
+
+  const loadPendingRequests = async () => {
+    try {
+      const response = await getPendingLeaves();
+      setRequests(response.data);
+    } catch (error) {
+      console.error(error);
+      alert("Unable to load leave requests.");
+    }
+  };
 
   const handleClick = (
-    event: React.MouseEvent<HTMLElement>
+    event: React.MouseEvent<HTMLElement>,
+    leaveRequestId: number
   ) => {
     setAnchorEl(event.currentTarget);
+    setSelectedRequestId(leaveRequestId);
   };
-  const handleApprove = () => {
-  handleClose();
-  alert("Leave Approved");
-};
-
-const handleReject = () => {
-  handleClose();
-  setOpenRejectDialog(true);
-};
-
-const handleRejectSubmit = () => {
-  if (!rejectReason.trim()) {
-    alert("Please enter the rejection reason.");
-    return;
-  }
-
-  console.log("Reject Reason:", rejectReason);
-
-
-  setRejectReason("");
-  setOpenRejectDialog(false);
-
-  alert("Leave Rejected Successfully");
-};
-
-const handleRejectCancel = () => {
-  setRejectReason("");
-  setOpenRejectDialog(false);
-};
 
   const handleClose = () => {
     setAnchorEl(null);
   };
 
+  const handleApprove = async () => {
+    try {
+      if (!selectedRequestId) return;
+
+      await leaveDecision(selectedRequestId, {
+        status: "Approved",
+        managerRemarks: "",
+      });
+
+      alert("Leave Approved");
+
+      loadPendingRequests();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to approve leave.");
+    }
+
+    handleClose();
+  };
+
+  const handleReject = () => {
+    handleClose();
+    setOpenRejectDialog(true);
+  };
+
+  const handleRejectSubmit = async () => {
+    if (!rejectReason.trim()) {
+      alert("Please enter rejection reason.");
+      return;
+    }
+
+    try {
+      if (!selectedRequestId) return;
+
+      await leaveDecision(selectedRequestId, {
+        status: "Rejected",
+        managerRemarks: rejectReason,
+      });
+
+      alert("Leave Rejected Successfully");
+
+      setRejectReason("");
+      setOpenRejectDialog(false);
+
+      loadPendingRequests();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to reject leave.");
+    }
+  };
+
+  const handleRejectCancel = () => {
+    setRejectReason("");
+    setOpenRejectDialog(false);
+  };
+
   return (
     <Box sx={{ p: 4 }}>
-        <Button
-  startIcon={<ArrowBackIcon />}
-  variant="outlined"
-  sx={{ mb: 2 }}
-  onClick={() => navigate("/dashboard")}
->
-</Button>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        variant="outlined"
+        sx={{ mb: 2 }}
+        onClick={() => navigate("/dashboard")}
+      />
 
       <Typography
         variant="h4"
@@ -125,152 +152,133 @@ const handleRejectCancel = () => {
       </Typography>
 
       <TableContainer component={Paper}>
-
         <Table>
 
           <TableHead>
-
             <TableRow>
-
-              <TableCell>
-                <b>Employee ID</b>
-              </TableCell>
-
-              <TableCell>
-                <b>Employee Name</b>
-              </TableCell>
-
-              <TableCell>
-                <b>Department</b>
-              </TableCell>
-
-              <TableCell>
-                <b>Leave Type</b>
-              </TableCell>
-
-              <TableCell>
-                <b>From Date</b>
-              </TableCell>
-
-              <TableCell>
-                <b>To Date</b>
-              </TableCell>
-
-              <TableCell align="center">
-                <b>Days</b>
-              </TableCell>
-
-              <TableCell>
-                <b>Reason</b>
-              </TableCell>
-
-              <TableCell>
-                <b>Applied On</b>
-              </TableCell>
-
-              <TableCell align="center">
-                <b>Action</b>
-              </TableCell>
-
+              <TableCell><b>Employee ID</b></TableCell>
+              <TableCell><b>Employee Name</b></TableCell>
+              <TableCell><b>Department</b></TableCell>
+              <TableCell><b>Leave Type</b></TableCell>
+              <TableCell><b>From Date</b></TableCell>
+              <TableCell><b>To Date</b></TableCell>
+              <TableCell align="center"><b>Days</b></TableCell>
+              <TableCell><b>Reason</b></TableCell>
+              <TableCell><b>Applied On</b></TableCell>
+              <TableCell align="center"><b>Action</b></TableCell>
             </TableRow>
-
           </TableHead>
 
           <TableBody>
 
-            {requestData.map((request) => (
-              <TableRow key={request.id}>
-
-                <TableCell>{request.id}</TableCell>
-
-                <TableCell>{request.name}</TableCell>
-
-                <TableCell>{request.department}</TableCell>
-
-                <TableCell>{request.leaveType}</TableCell>
-
-                <TableCell>{request.fromDate}</TableCell>
-
-                <TableCell>{request.toDate}</TableCell>
-
-                <TableCell align="center">
-                  {request.days}
+            {requests.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={10}
+                  align="center"
+                >
+                  No pending leave requests.
                 </TableCell>
-
-                <TableCell>{request.reason}</TableCell>
-
-                <TableCell>{request.appliedOn}</TableCell>
-
-                <TableCell align="center">
-
-                  <IconButton onClick={handleClick}>
-                    <MoreVertIcon />
-                  </IconButton>
-
-                </TableCell>
-
               </TableRow>
-            ))}
+            ) : (
+              requests.map((request) => (
+                <TableRow key={request.leaveRequestId}>
+              <TableCell>{request.userId}</TableCell>
+              <TableCell>{request.userName}</TableCell>
+              <TableCell>{request.departmentName}</TableCell>
+              <TableCell>{request.leaveTypeName}</TableCell>
+              <TableCell>{request.startDate}</TableCell>
+              <TableCell>{request.endDate}</TableCell>
+
+              <TableCell align="center">
+                {request.numberOfDays}
+              </TableCell>
+
+              <TableCell>{request.reason}</TableCell>
+
+              <TableCell>
+                {request.appliedDate ? new Date(request.appliedDate).toLocaleDateString("en-GB").replace(/\//g, "-"): "-"}
+              </TableCell>
+
+              <TableCell align="center">
+                <IconButton
+                  onClick={(e) =>
+                    handleClick(
+                      e,
+                      request.leaveRequestId
+                    )
+                  }
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </TableCell>
+            </TableRow>
+              ))
+            )}
 
           </TableBody>
 
         </Table>
-
       </TableContainer>
 
       <Menu
-  anchorEl={anchorEl}
-  open={open}
-  onClose={handleClose}
->
-  <MenuItem onClick={handleApprove}>
-    Approve
-  </MenuItem>
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleApprove}>
+          Approve
+        </MenuItem>
 
-  <MenuItem
-    onClick={handleReject}
-    sx={{ color: "error.main" }}
-  >
-    Reject
-  </MenuItem>
-</Menu>
+        <MenuItem
+          sx={{ color: "error.main" }}
+          onClick={handleReject}
+        >
+          Reject
+        </MenuItem>
+      </Menu>
+
       <Dialog
-  open={openRejectDialog}
-  onClose={handleRejectCancel}
-  fullWidth
-  maxWidth="sm"
->
-  <DialogTitle>Reject Leave Request</DialogTitle>
+        open={openRejectDialog}
+        onClose={handleRejectCancel}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Reject Leave Request
+        </DialogTitle>
 
-  <DialogContent>
-    <TextField
-      autoFocus
-      margin="dense"
-      label="Reason for Rejection"
-      fullWidth
-      multiline
-      rows={4}
-      value={rejectReason}
-      onChange={(e) => setRejectReason(e.target.value)}
-      placeholder="Enter rejection reason..."
-    />
-  </DialogContent>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            multiline
+            rows={4}
+            margin="dense"
+            label="Reason for Rejection"
+            value={rejectReason}
+            onChange={(e) =>
+              setRejectReason(
+                e.target.value
+              )
+            }
+          />
+        </DialogContent>
 
-  <DialogActions>
-    <Button onClick={handleRejectCancel}>
-      Cancel
-    </Button>
+        <DialogActions>
+          <Button onClick={handleRejectCancel}>
+            Cancel
+          </Button>
 
-    <Button
-      variant="contained"
-      color="error"
-      onClick={handleRejectSubmit}
-    >
-      Submit
-    </Button>
-  </DialogActions>
-</Dialog>
-
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleRejectSubmit}
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

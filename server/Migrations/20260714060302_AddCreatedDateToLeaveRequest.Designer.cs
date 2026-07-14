@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using server.Data;
@@ -11,9 +12,11 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260714060302_AddCreatedDateToLeaveRequest")]
+    partial class AddCreatedDateToLeaveRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -208,7 +211,6 @@ namespace server.Migrations
                     b.ToTable("LeaveRequests");
                 });
 
-
             modelBuilder.Entity("server.Models.LeaveType", b =>
                 {
                     b.Property<int>("LeaveTypeId")
@@ -305,20 +307,8 @@ namespace server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
-                    b.Property<string>("Address")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<DateOnly>("DateOfJoining")
-                        .HasColumnType("date");
-
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Designation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -339,11 +329,6 @@ namespace server.Migrations
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
@@ -368,41 +353,32 @@ namespace server.Migrations
                         new
                         {
                             UserId = 1,
-                            DateOfJoining = new DateOnly(1, 1, 1),
                             DepartmentId = 1,
-                            Designation = "",
                             Email = "admin@test.com",
                             IsActive = true,
                             Name = "Admin User",
                             PasswordHash = "$2a$11$dIRcqLN9ra7kSjzxrk8.ZuAEaPHfo0i4PZL7ek8LyjI1Gx/XOgtsm",
-                            PhoneNumber = "",
                             RoleId = 1
                         },
                         new
                         {
                             UserId = 2,
-                            DateOfJoining = new DateOnly(1, 1, 1),
                             DepartmentId = 2,
-                            Designation = "",
                             Email = "manager@test.com",
                             IsActive = true,
                             Name = "Jane Smith",
                             PasswordHash = "$2a$11$Cg1Fem.NDJO/UtHAnOGLXOTm8I7tDnFC2gUHEApqvSl7UNJKFW0Au",
-                            PhoneNumber = "",
                             RoleId = 2
                         },
                         new
                         {
                             UserId = 3,
-                            DateOfJoining = new DateOnly(1, 1, 1),
                             DepartmentId = 2,
-                            Designation = "",
                             Email = "employee@test.com",
                             IsActive = true,
                             ManagerId = 2,
                             Name = "John Doe",
                             PasswordHash = "$2a$11$90gTurBEthchZx57oyM8Aed7r511ob.c1kIV/76ThFpQOCHxrhNXG",
-                            PhoneNumber = "",
                             RoleId = 3
                         });
                 });

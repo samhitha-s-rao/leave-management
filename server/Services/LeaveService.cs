@@ -35,7 +35,8 @@ namespace server.Services
                 NumberOfDays = days,
                 LeaveDuration = dto.LeaveDuration,
                 Reason = dto.Reason,
-                Status = "Pending"
+                Status = "Pending",
+                CreatedDate = DateTime.UtcNow
             };
 
             var createdLeave =
@@ -117,26 +118,32 @@ namespace server.Services
             return true;
         }
 
-        private LeaveResponseDto MapToResponseDto(
-            LeaveRequest leave)
-        {
-            return new LeaveResponseDto
-            {
-                LeaveRequestId = leave.LeaveRequestId,
-                UserId = leave.UserId,
-                UserName = leave.User?.Name ?? string.Empty,
-                LeaveTypeId = leave.LeaveTypeId,
-                LeaveTypeName = leave.LeaveType?.LeaveTypeName ?? string.Empty,
-                StartDate = leave.StartDate,
-                EndDate = leave.EndDate,
-                NumberOfDays = leave.NumberOfDays,
-                LeaveDuration = leave.LeaveDuration,
-                Reason = leave.Reason,
-                Status = leave.Status,
-                ManagerRemarks = leave.ManagerRemarks,
-                ApprovedBy = leave.ApprovedBy,
-                ActionDate = leave.ActionDate
-            };
-        }
+        private LeaveResponseDto MapToResponseDto(LeaveRequest leave)
+{
+    return new LeaveResponseDto
+    {
+        LeaveRequestId = leave.LeaveRequestId,
+        UserId = leave.UserId,
+        UserName = leave.User?.Name ?? string.Empty,
+
+        DepartmentName =
+            leave.User?.Department?.DepartmentName,
+
+        LeaveTypeId = leave.LeaveTypeId,
+        LeaveTypeName =
+            leave.LeaveType?.LeaveTypeName ?? string.Empty,
+
+        StartDate = leave.StartDate,
+        EndDate = leave.EndDate,
+        NumberOfDays = leave.NumberOfDays,
+        LeaveDuration = leave.LeaveDuration,
+        Reason = leave.Reason,
+        Status = leave.Status,
+        ManagerRemarks = leave.ManagerRemarks,
+        ApprovedBy = leave.ApprovedBy,
+        ActionDate = leave.ActionDate,
+        AppliedDate = leave.CreatedDate
+    };
+}
     }
 }
