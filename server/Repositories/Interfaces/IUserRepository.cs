@@ -1,14 +1,21 @@
 using server.Models;
 
-namespace server.Repositories.Interfaces;
-
-public interface IUserRepository
+namespace server.Repositories.Interfaces
 {
-    Task<User?> GetUserByEmailAsync(string email);
+    public interface IUserRepository
+    {
+        Task<IEnumerable<User>> GetAllAsync();
 
-    Task<User?> GetUserByIdAsync(int userId);
+        Task<User?> GetByIdAsync(int id);
 
-    Task AddUserAsync(User user);
+        Task<User?> GetUserByEmailAsync(string email);
 
-    Task SaveChangesAsync();
+        Task AddAsync(User user);
+
+        Task UpdateAsync(User user);
+
+        Task DeleteAsync(User user);
+
+        Task SaveChangesAsync();
+    }
 }

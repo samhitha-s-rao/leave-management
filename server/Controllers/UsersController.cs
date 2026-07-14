@@ -1,34 +1,92 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using server.DTOs;
+using server.Services.Interfaces;
 
-namespace server.Controllers;
-
-[Authorize(Roles = "Admin")]
-[ApiController]
-[Route("api/[controller]")]
-public class UserController : ControllerBase
+namespace server.Controllers
 {
-    [HttpGet]
-    public IActionResult GetAllUsers()
+    [ApiController]
+    [Route("api/[controller]")]
+    [Authorize]
+    public class UsersController : ControllerBase
     {
-        return Ok();
-    }
+        private readonly IUserService _service;
 
-    [HttpPost]
-    public IActionResult AddUser()
-    {
-        return Ok();
-    }
+        public UsersController(IUserService service)
+        {
+            _service = service;
+        }
 
-    [HttpPut("{id}")]
-    public IActionResult UpdateUser(int id)
-    {
-        return Ok();
-    }
+        // GET: api/Users
+        [HttpGet]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAll()
+        {
+            var users = await _service.GetAllAsync();
+            return Ok(users);
+        }
 
-    [HttpPut("{id}/deactivate")]
-    public IActionResult DeactivateUser(int id)
+        // GET: api/Users/5
+        [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Manager,Employee")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var user = await _service.GetByIdAsync(id);
+
+            if (user == null)
+                return NotFound("User not found.");
+
+            return Ok(user);
+        }
+
+        // POST: api/Users
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create(CreateUserDto dto)
+        {
+            await _service.CreateAsync(dto);
+
+            return Ok(new
+            {
+                message = "User created successfully."
+            });
+        }
+
+        // PUT: api/Users/5
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(int id, UpdateUserDto dto)
+        {
+            await _service.UpdateAsync(id, dto);
+
+            return Ok(new
+            {
+                message = "User updated successfully."
+            });
+        }
+        [HttpPut("{id}/profile")]
+[Authorize(Roles = "Admin,Manager,Employee")]
+public async Task<IActionResult> UpdateProfile(int id, UpdateProfileDto dto)
+{
+    await _service.UpdateProfileAsync(id, dto);
+
+    return Ok(new
     {
-        return Ok();
+        message = "Profile updated successfully."
+    });
+}
+
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _service.DeleteAsync(id);
+
+            return Ok(new
+            {
+                message = "User deleted successfully."
+            });
+        }
     }
 }

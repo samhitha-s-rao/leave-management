@@ -8,6 +8,7 @@ namespace server.Models
         [Key]
         public int UserId { get; set; }
 
+
         [Required]
         [MaxLength(100)]
         public string Name { get; set; } = string.Empty;
@@ -19,6 +20,22 @@ namespace server.Models
 
         [Required]
         public string PasswordHash { get; set; } = string.Empty;
+
+        [Required]
+        [Phone]
+        [MaxLength(10)]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+
+        [Required]
+        public string ProfilePictureUrl {get; set;} = string.Empty;
+
+        [Required]
+        public string Address {get; set;} = string.Empty;
+
+        [Required]
+        public string DateofJoining {get; set;} = string.Empty;
+
 
         public bool IsActive { get; set; } = true;
 

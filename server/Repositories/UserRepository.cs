@@ -3,40 +3,64 @@ using server.Data;
 using server.Models;
 using server.Repositories.Interfaces;
 
-namespace server.Repositories;
-
-public class UserRepository : IUserRepository
+namespace server.Repositories
 {
-    private readonly ApplicationDbContext _context;
-
-    public UserRepository(ApplicationDbContext context)
+    public class UserRepository : IUserRepository
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
 
-    public async Task<User?> GetUserByEmailAsync(string email)
-    {
-        return await _context.Users
-            .Include(u => u.Role)
-            .Include(u => u.Department)
-            .FirstOrDefaultAsync(u => u.Email == email);
-    }
+        public UserRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
 
-    public async Task<User?> GetUserByIdAsync(int userId)
-    {
-        return await _context.Users
-            .Include(u => u.Role)
-            .Include(u => u.Department)
-            .FirstOrDefaultAsync(u => u.UserId == userId);
-    }
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Department)
+                .Include(u => u.Manager)
+                .ToListAsync();
+        }
 
-    public async Task AddUserAsync(User user)
-    {
-        await _context.Users.AddAsync(user);
-    }
+        public async Task<User?> GetByIdAsync(int id)
+        {
+            return await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Department)
+                .Include(u => u.Manager)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+        }
 
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
+        public async Task<User?> GetUserByEmailAsync(string email)
+{
+    return await _context.Users
+        .Include(u => u.Role)
+        .Include(u => u.Department)
+        .Include(u => u.Manager)
+        .FirstOrDefaultAsync(u => u.Email == email);
+}
+
+        public async Task AddAsync(User user)
+        {
+            await _context.Users.AddAsync(user);
+        }
+
+        public Task UpdateAsync(User user)
+        {
+            _context.Users.Update(user);
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAsync(User user)
+        {
+            _context.Users.Remove(user);
+            return Task.CompletedTask;
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }
