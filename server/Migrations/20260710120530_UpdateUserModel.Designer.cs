@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using server.Data;
@@ -11,9 +12,11 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260710120530_UpdateUserModel")]
+    partial class UpdateUserModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,6 +115,10 @@ namespace server.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HolidayId"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
 
                     b.Property<DateOnly>("HolidayDate")
                         .HasColumnType("date");
@@ -302,28 +309,11 @@ namespace server.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("Address")
-<<<<<<< HEAD
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("DateofJoining")
-                        .IsRequired()
-                        .HasColumnType("text");
-=======
                         .HasMaxLength(300)
                         .HasColumnType("character varying(300)");
 
-                    b.Property<DateOnly>("DateOfJoining")
-                        .HasColumnType("date");
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
-
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Designation")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -347,17 +337,8 @@ namespace server.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-<<<<<<< HEAD
-                        .HasMaxLength(10)
-                        .HasColumnType("character varying(10)");
-
-                    b.Property<string>("ProfilePictureUrl")
-                        .IsRequired()
-                        .HasColumnType("text");
-=======
                         .HasMaxLength(15)
                         .HasColumnType("character varying(15)");
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
@@ -382,68 +363,35 @@ namespace server.Migrations
                         new
                         {
                             UserId = 1,
-<<<<<<< HEAD
-                            Address = "",
-                            DateofJoining = "",
-=======
-                            DateOfJoining = new DateOnly(1, 1, 1),
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
                             DepartmentId = 1,
-                            Designation = "",
                             Email = "admin@test.com",
                             IsActive = true,
                             Name = "Admin User",
                             PasswordHash = "$2a$11$dIRcqLN9ra7kSjzxrk8.ZuAEaPHfo0i4PZL7ek8LyjI1Gx/XOgtsm",
                             PhoneNumber = "",
-<<<<<<< HEAD
-                            ProfilePictureUrl = "",
-=======
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
                             RoleId = 1
                         },
                         new
                         {
                             UserId = 2,
-<<<<<<< HEAD
-                            Address = "",
-                            DateofJoining = "",
-=======
-                            DateOfJoining = new DateOnly(1, 1, 1),
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
                             DepartmentId = 2,
-                            Designation = "",
                             Email = "manager@test.com",
                             IsActive = true,
                             Name = "Jane Smith",
                             PasswordHash = "$2a$11$Cg1Fem.NDJO/UtHAnOGLXOTm8I7tDnFC2gUHEApqvSl7UNJKFW0Au",
                             PhoneNumber = "",
-<<<<<<< HEAD
-                            ProfilePictureUrl = "",
-=======
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
                             RoleId = 2
                         },
                         new
                         {
                             UserId = 3,
-<<<<<<< HEAD
-                            Address = "",
-                            DateofJoining = "",
-=======
-                            DateOfJoining = new DateOnly(1, 1, 1),
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
                             DepartmentId = 2,
-                            Designation = "",
                             Email = "employee@test.com",
                             IsActive = true,
                             ManagerId = 2,
                             Name = "John Doe",
                             PasswordHash = "$2a$11$90gTurBEthchZx57oyM8Aed7r511ob.c1kIV/76ThFpQOCHxrhNXG",
                             PhoneNumber = "",
-<<<<<<< HEAD
-                            ProfilePictureUrl = "",
-=======
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
                             RoleId = 3
                         });
                 });

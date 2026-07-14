@@ -19,6 +19,13 @@ namespace server.Models
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(15)]
+        public string PhoneNumber { get; set; } = string.Empty;
+
+        [MaxLength(300)]
+        public string? Address { get; set; }
+
+        [Required]
         public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
@@ -39,11 +46,19 @@ namespace server.Models
 
         public bool IsActive { get; set; } = true;
 
+[Required]
+[MaxLength(100)]
+public string Designation { get; set; } = string.Empty;
+
+[Required]
+public DateOnly DateOfJoining { get; set; }
+
         // Foreign Keys
         public int RoleId { get; set; }
 
         public int DepartmentId { get; set; }
 
+        // Only Employees will have a Manager
         public int? ManagerId { get; set; }
 
         // Navigation Properties
