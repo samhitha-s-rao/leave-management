@@ -79,6 +79,30 @@ namespace server.Services
 
             return leaves.Select(MapToResponseDto);
         }
+
+        public async Task<IEnumerable<EmployeeLeaveHistoryDto>>GetEmployeeLeaveHistoryAsync(
+                int userId,
+                string role)
+            {
+                var leaves =
+                    await _leaveRepository
+                        .GetEmployeeLeaveHistoryAsync(
+                            userId,
+                            role);
+
+                return leaves.Select(l => new EmployeeLeaveHistoryDto
+                {
+                    UserId = l.UserId,
+                    UserName = l.User.Name,
+                    DepartmentName =l.User.Department.DepartmentName,
+                    RoleName = l.User.Role.RoleName,
+                    LeaveTypeName = l.LeaveType.LeaveTypeName,
+                    StartDate = l.StartDate,
+                    EndDate = l.EndDate,
+                    NumberOfDays = l.NumberOfDays,
+                    Status = l.Status
+                });
+            }
         public async Task<LeaveResponseDto> GetLeaveByIdAsync(int leaveId)
 {
             var leave = await _leaveRepository.GetLeaveByIdAsync(leaveId);
@@ -128,7 +152,6 @@ namespace server.Services
 
         DepartmentName =
             leave.User?.Department?.DepartmentName,
-
         LeaveTypeId = leave.LeaveTypeId,
         LeaveTypeName =
             leave.LeaveType?.LeaveTypeName ?? string.Empty,

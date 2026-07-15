@@ -13,5 +13,6 @@ namespace server.Repositories.Interfaces
             string approverRole);
         Task<LeaveRequest?> GetLeaveByIdAsync(int leaveRequestId);
         Task UpdateLeaveAsync(LeaveRequest leaveRequest);
+        Task<IEnumerable<LeaveRequest>>GetEmployeeLeaveHistoryAsync(int userId,string role);
     }
 }

@@ -1,11 +1,4 @@
 import {
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
   Chip,
   Button,
@@ -15,45 +8,42 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { useEffect, useState } from "react";
-import { getMyLeaves } from "../../services/leaveService";
-import type { LeaveHistory} from "../../types";
+
+import {
+  getMyLeaves,
+  getEmployeeLeaveHistory,
+} from "../../services/leaveService";
+
+import type {
+  LeaveHistory,
+  EmployeeLeaveHistory,
+} from "../../types";
+
 import AppTable from "../../components/common/AppTable";
 
-// const employeeHistory = [
-//   {
-//     employee: "John",
-//     role: "Employee",
-//     type: "Casual Leave",
-//     from: "10-Jul-2026",
-//     to: "12-Jul-2026",
-//     status: "Approved",
-//   },
-//   {
-//     employee: "David",
-//     role: "Manager",
-//     type: "Sick Leave",
-//     from: "15-Jul-2026",
-//     to: "16-Jul-2026",
-//     status: "Pending",
-//   },
-// ];
-
-
-const LeaveHistory = () => {
+const LeaveHistoryPage = () => {
   const navigate = useNavigate();
 
-  const [myLeaveHistory, setMyLeaveHistory] = useState<LeaveHistory[]>([]);
+  const [myLeaveHistory, setMyLeaveHistory] =
+    useState<LeaveHistory[]>([]);
 
+  const [employeeHistory, setEmployeeHistory] =
+    useState<EmployeeLeaveHistory[]>([]);
 
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
     JSON.parse(sessionStorage.getItem("user") || "null");
 
-
   useEffect(() => {
     loadLeaveHistory();
-  }, []);
 
+    if (
+      user?.role === "Manager" ||
+      user?.role === "Admin"
+    ) {
+      loadEmployeeHistory();
+    }
+  }, []);
 
   const loadLeaveHistory = async () => {
     try {
@@ -65,45 +55,41 @@ const LeaveHistory = () => {
     }
   };
 
+  const loadEmployeeHistory = async () => {
+    try {
+      const response =
+        await getEmployeeLeaveHistory();
+
+      setEmployeeHistory(response.data);
+    } catch (error) {
+      console.error(error);
+      alert(
+        "Failed to load employee leave history."
+      );
+    }
+  };
 
   if (!user) return null;
 
-
   const exportToExcel = () => {
-    let data: unknown[] = [];
-
-
-    // Employee / Manager / Admin own leave history
-    data = myLeaveHistory.map((leave) => ({
+    const data = myLeaveHistory.map((leave) => ({
       "Request ID": leave.leaveRequestId,
       "Leave Type": leave.leaveTypeName,
-      From: new Date(leave.startDate).toLocaleDateString(),
-      To: new Date(leave.endDate).toLocaleDateString(),
+      From: new Date(
+        leave.startDate
+      ).toLocaleDateString(),
+      To: new Date(
+        leave.endDate
+      ).toLocaleDateString(),
       Days: leave.numberOfDays,
       Status: leave.status,
     }));
 
+    const worksheet =
+      XLSX.utils.json_to_sheet(data);
 
-    /*
-    Employee Leave History export
-    Enable after backend API is available.
-
-    if(user.role === "Manager" || user.role === "Admin"){
-       data = employeeHistory.map((leave)=>({
-          Employee: leave.employee,
-          Role: leave.role,
-          "Leave Type": leave.type,
-          From: leave.from,
-          To: leave.to,
-          Status: leave.status
-       }))
-    }
-    */
-
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-
-    const workbook = XLSX.utils.book_new();
+    const workbook =
+      XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(
       workbook,
@@ -111,37 +97,152 @@ const LeaveHistory = () => {
       "Leave History"
     );
 
-    XLSX.writeFile(workbook, "Leave_History.xlsx");
+    XLSX.writeFile(
+      workbook,
+      "Leave_History.xlsx"
+    );
   };
 
+  const myHistoryColumns = [
+    {
+      field: "leaveRequestId",
+      headerName: "Request ID",
+    },
+    {
+      field: "leaveTypeName",
+      headerName: "Leave Type",
+    },
+    {
+      field: "startDate",
+      headerName: "From",
+      render: (row: LeaveHistory) =>
+        new Date(
+          row.startDate
+        ).toLocaleDateString(),
+    },
+    {
+      field: "endDate",
+      headerName: "To",
+      render: (row: LeaveHistory) =>
+        new Date(
+          row.endDate
+        ).toLocaleDateString(),
+    },
+    {
+      field: "numberOfDays",
+      headerName: "Days",
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      render: (row: LeaveHistory) => (
+        <Chip
+          label={row.status}
+          color={
+            row.status === "Approved"
+              ? "success"
+              : row.status === "Pending"
+              ? "warning"
+              : "error"
+          }
+        />
+      ),
+    },
+  ];
+
+  const employeeColumns = [
+    {
+      field: "userId",
+      headerName: "Employee ID",
+    },
+    {
+      field: "userName",
+      headerName: "Employee Name",
+    },
+    {
+    field: "departmentName",
+    headerName: "Department",
+
+    },
+    {
+      field: "roleName",
+      headerName: "Role",
+    },
+    
+    {
+      field: "leaveTypeName",
+      headerName: "Leave Type",
+    },
+    {
+      field: "startDate",
+      headerName: "From",
+      render: (
+        row: EmployeeLeaveHistory
+      ) =>
+        new Date(
+          row.startDate
+        ).toLocaleDateString(),
+    },
+    {
+      field: "endDate",
+      headerName: "To",
+      render: (
+        row: EmployeeLeaveHistory
+      ) =>
+        new Date(
+          row.endDate
+        ).toLocaleDateString(),
+    },
+    {
+      field: "numberOfDays",
+      headerName: "Days",
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      render: (
+        row: EmployeeLeaveHistory
+      ) => (
+        <Chip
+          label={row.status}
+          color={
+            row.status === "Approved"
+              ? "success"
+              : row.status === "Pending"
+              ? "warning"
+              : "error"
+          }
+        />
+      ),
+    },
+  ];
 
   return (
     <Box sx={{ p: 4 }}>
-
       <Button
         startIcon={<ArrowBackIcon />}
         variant="outlined"
         sx={{ mb: 3 }}
-        onClick={() => navigate("/dashboard")}
+        onClick={() =>
+          navigate("/dashboard")
+        }
       >
         Back
       </Button>
 
-
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent:
+            "space-between",
           alignItems: "center",
           width: "100%",
           mb: 4,
         }}
       >
-
         <Typography variant="h4">
           Leave History
         </Typography>
-
 
         <Button
           variant="contained"
@@ -155,265 +256,41 @@ const LeaveHistory = () => {
         >
           Export
         </Button>
-
       </Box>
 
+      <Typography
+        variant="h5"
+        mb={2}
+      >
+        My Leave History
+      </Typography>
 
+      <AppTable
+        columns={myHistoryColumns}
+        rows={myLeaveHistory}
+        noDataMessage="No leave history found."
+      />
 
-      {/* Employee */}
-
-      {user.role === "Employee" && (
+      {(user.role === "Manager" ||
+        user.role === "Admin") && (
         <>
-          <Typography variant="h5" mb={2}>
-            My Leave History
-          </Typography>
-
-
-          <TableContainer component={Paper}>
-            <Table>
-
-              <TableHead>
-                <TableRow>
-
-                  <TableCell>
-                    <b>Request ID</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Leave Type</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>From</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>To</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Days</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Status</b>
-                  </TableCell>
-
-                </TableRow>
-              </TableHead>
-
-
-              <TableBody>
-
-                {myLeaveHistory.map((leave) => (
-
-                  <TableRow key={leave.leaveRequestId}>
-
-                    <TableCell>
-                      {leave.leaveRequestId}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {leave.leaveTypeName}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {new Date(
-                        leave.startDate
-                      ).toLocaleDateString()}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {new Date(
-                        leave.endDate
-                      ).toLocaleDateString()}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {leave.numberOfDays}
-                    </TableCell>
-
-
-                    <TableCell>
-
-                      <Chip
-                        label={leave.status}
-                        color={
-                          leave.status === "Approved"
-                            ? "success"
-                            : leave.status === "Pending"
-                            ? "warning"
-                            : "error"
-                        }
-                      />
-
-                    </TableCell>
-
-
-                  </TableRow>
-
-                ))}
-
-              </TableBody>
-
-
-            </Table>
-          </TableContainer>
-
-        </>
-      )}
-
-
-
-
-      {/* Manager & Admin */}
-
-      {(user.role === "Manager" || user.role === "Admin") && (
-
-        <>
-
-          <Typography variant="h5" mb={2}>
-            My Leave History
-          </Typography>
-
-
-          <TableContainer component={Paper}>
-
-            <Table>
-
-              <TableHead>
-
-                <TableRow>
-
-                  <TableCell>
-                    <b>Request ID</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Leave Type</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>From</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>To</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Days</b>
-                  </TableCell>
-
-                  <TableCell>
-                    <b>Status</b>
-                  </TableCell>
-
-                </TableRow>
-
-              </TableHead>
-
-
-              <TableBody>
-
-
-                {myLeaveHistory.map((leave)=>(
-
-                  <TableRow key={leave.leaveRequestId}>
-
-
-                    <TableCell>
-                      {leave.leaveRequestId}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {leave.leaveTypeName}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {new Date(
-                        leave.startDate
-                      ).toLocaleDateString()}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {new Date(
-                        leave.endDate
-                      ).toLocaleDateString()}
-                    </TableCell>
-
-
-                    <TableCell>
-                      {leave.numberOfDays}
-                    </TableCell>
-
-
-                    <TableCell>
-
-                      <Chip
-                        label={leave.status}
-                        color={
-                          leave.status === "Approved"
-                          ? "success"
-                          : leave.status === "Pending"
-                          ? "warning"
-                          : "error"
-                        }
-                      />
-
-                    </TableCell>
-
-
-                  </TableRow>
-
-                ))}
-
-
-              </TableBody>
-
-
-            </Table>
-
-          </TableContainer>
-
-
-
-
-
-          {/*
-          
-          Employee Leave History
-
-          Enable after backend API:
-          GET /api/Leave/history
-
-
-          <Typography variant="h5" mb={2}>
+          <Typography
+            variant="h5"
+            mt={4}
+            mb={2}
+          >
             Employee Leave History
           </Typography>
 
-
-          <TableContainer component={Paper}>
-             Employee history table here
-          </TableContainer>
-
-          */}
-
-
+          <AppTable
+            columns={employeeColumns}
+            rows={employeeHistory}
+            noDataMessage="No employee leave history found."
+          />
         </>
-
       )}
-
     </Box>
   );
 };
 
-
-export default LeaveHistory;
+export default LeaveHistoryPage;

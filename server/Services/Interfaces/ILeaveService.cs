@@ -13,6 +13,7 @@ namespace server.Services.Interfaces
 
         Task<IEnumerable<LeaveHistoryDto>> GetLeaveHistoryAsync(int userId);
 
+        Task<IEnumerable<EmployeeLeaveHistoryDto>>GetEmployeeLeaveHistoryAsync(int userId, string role);
         Task<IEnumerable<LeaveResponseDto>> GetPendingLeavesAsync(
         int approverId,
         string approverRole);

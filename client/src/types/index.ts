@@ -74,3 +74,15 @@ export interface LeaveHistory {
   reason: string;
   status: string;
 }
+
+export interface EmployeeLeaveHistory {
+  userId: number;
+  userName: string;
+  departmentName: string;
+  roleName: string;
+  leaveTypeName: string;
+  startDate: string;
+  endDate: string;
+  numberOfDays: number;
+  status: string;
+}

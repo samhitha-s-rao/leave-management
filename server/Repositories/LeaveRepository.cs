@@ -79,5 +79,29 @@ namespace server.Repositories
 
             await _context.SaveChangesAsync();
         }
-    }
-}
+
+        public async Task<IEnumerable<LeaveRequest>>GetEmployeeLeaveHistoryAsync(int userId,string role)
+        {
+            var query = _context.LeaveRequests
+                .Include(l => l.User)
+                    .ThenInclude(u => u.Role)
+
+                .Include(l => l.User)
+                    .ThenInclude(u => u.Department)
+
+                .Include(l => l.LeaveType)
+                .AsQueryable();
+
+            if (role == "Manager")
+            {
+                query = query.Where(
+                    l => l.User.ManagerId == userId);
+            }
+
+            return await query
+                .OrderByDescending(
+                    l => l.LeaveRequestId)
+                .ToListAsync();
+        }
+            }
+        }

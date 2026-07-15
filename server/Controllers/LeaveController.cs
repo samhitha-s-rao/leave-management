@@ -66,6 +66,36 @@ namespace server.Controllers
             return Ok(leaves);
         }
 
+        [Authorize(Roles = "Manager,Admin")]
+            [HttpGet("employee-history")]
+            public async Task<IActionResult>
+            GetEmployeeHistory()
+            {
+                var userIdClaim =
+                    User.FindFirstValue(
+                        ClaimTypes.NameIdentifier);
+
+                var role =
+                    User.FindFirstValue(
+                        ClaimTypes.Role);
+
+                if (!int.TryParse(
+                    userIdClaim,
+                    out int userId))
+                {
+                    return Unauthorized();
+                }
+
+                var result =
+                    await _leaveService
+                        .GetEmployeeLeaveHistoryAsync(
+                            userId,
+                            role!);
+
+                return Ok(result);
+            }
+            
+
         // Manager/Admin views pending leave requests
         [Authorize(Roles = "Manager,Admin")]
         [HttpGet("pending")]

@@ -1,14 +1,7 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Typography,
-  Paper,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  TableContainer,
   Button,
   Dialog,
   DialogTitle,
@@ -21,40 +14,40 @@ import {
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
-import type { LeaveType} from "../../types";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 import { useNavigate } from "react-router-dom";
 
-
+import type { LeaveType } from "../../types";
+import AppTable from "../../components/common/AppTable";
 
 const LeaveSettings = () => {
   const navigate = useNavigate();
+
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([
-  {
-    leaveTypeId: 1,
-    leaveTypeName: "Casual Leave",
-    allocatedLeaves: 10,
-  },
-  {
-    leaveTypeId: 2,
-    leaveTypeName: "Sick Leave",
-    allocatedLeaves: 15,
-  },
-  {
-    leaveTypeId: 3,
-    leaveTypeName: "Earned Leave",
-    allocatedLeaves: 20,
-  },
-]);
+    {
+      leaveTypeId: 1,
+      leaveTypeName: "Casual Leave",
+      allocatedLeaves: 10,
+    },
+    {
+      leaveTypeId: 2,
+      leaveTypeName: "Sick Leave",
+      allocatedLeaves: 15,
+    },
+    {
+      leaveTypeId: 3,
+      leaveTypeName: "Earned Leave",
+      allocatedLeaves: 20,
+    },
+  ]);
 
   const [open, setOpen] = useState(false);
-
   const [isEdit, setIsEdit] = useState(false);
 
   const [currentId, setCurrentId] = useState<number | null>(null);
 
   const [leaveType, setLeaveType] = useState("");
-
   const [totalLeaves, setTotalLeaves] = useState("");
 
   const handleAdd = () => {
@@ -79,10 +72,12 @@ const LeaveSettings = () => {
     if (isEdit) {
       setLeaveTypes((prev) =>
         prev.map((item) =>
-          item.leaveTypeId === currentId? {...item,
-            leaveTypeName: leaveType,
-            allocatedLeaves: Number(totalLeaves),
-          }
+          item.leaveTypeId === currentId
+            ? {
+                ...item,
+                leaveTypeName: leaveType,
+                allocatedLeaves: Number(totalLeaves),
+              }
             : item
         )
       );
@@ -90,10 +85,10 @@ const LeaveSettings = () => {
       setLeaveTypes((prev) => [
         ...prev,
         {
-        leaveTypeId: Date.now(),
-        leaveTypeName: leaveType,
-        allocatedLeaves: Number(totalLeaves),
-      },
+          leaveTypeId: Date.now(),
+          leaveTypeName: leaveType,
+          allocatedLeaves: Number(totalLeaves),
+        },
       ]);
     }
 
@@ -101,20 +96,60 @@ const LeaveSettings = () => {
   };
 
   const handleDelete = (id: number) => {
-  setLeaveTypes((prev) =>
-    prev.filter((item) => item.leaveTypeId !== id)
-  );
-};
+    setLeaveTypes((prev) =>
+      prev.filter(
+        (item) => item.leaveTypeId !== id
+      )
+    );
+  };
+
+  const columns = [
+    {
+      field: "leaveTypeName",
+      headerName: "Leave Type",
+    },
+    {
+      field: "allocatedLeaves",
+      headerName: "Total Leaves",
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      align: "center" as const,
+      render: (leave: LeaveType) => (
+        <>
+          <IconButton
+            color="primary"
+            onClick={() => handleEdit(leave)}
+          >
+            <EditIcon />
+          </IconButton>
+
+          <IconButton
+            color="error"
+            onClick={() =>
+              handleDelete(
+                leave.leaveTypeId
+              )
+            }
+          >
+            <DeleteIcon />
+          </IconButton>
+        </>
+      ),
+    },
+  ];
 
   return (
     <Box p={4}>
       <Button
-  startIcon={<ArrowBackIcon />}
-  variant="outlined"
-  sx={{ mb: 2 }}
-  onClick={() => navigate("/dashboard")}
->
-</Button>
+        startIcon={<ArrowBackIcon />}
+        variant="outlined"
+        sx={{ mb: 2 }}
+        onClick={() =>
+          navigate("/dashboard")
+        }
+      />
 
       <Box
         display="flex"
@@ -135,63 +170,11 @@ const LeaveSettings = () => {
         </Button>
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <b>Leave Type</b>
-              </TableCell>
-
-              <TableCell>
-                <b>Total Leaves</b>
-              </TableCell>
-
-              <TableCell align="center">
-                <b>Actions</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-
-            {leaveTypes.map((leave) => (
-              <TableRow key={leave.leaveTypeId}>
-
-                <TableCell>
-                  {leave.leaveTypeName}
-                </TableCell>
-
-                <TableCell>
-                  {leave.allocatedLeaves}
-                </TableCell>
-
-                <TableCell align="center">
-
-                  <IconButton
-                    color="primary"
-                    onClick={() => handleEdit(leave)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-
-                  <IconButton
-                    color="error"
-                    onClick={() => handleDelete(leave.leaveTypeId)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-
-                </TableCell>
-
-              </TableRow>
-            ))}
-
-          </TableBody>
-
-        </Table>
-      </TableContainer>
+      <AppTable
+        columns={columns}
+        rows={leaveTypes}
+        noDataMessage="No leave types found."
+      />
 
       <Dialog
         open={open}
@@ -200,17 +183,22 @@ const LeaveSettings = () => {
         fullWidth
       >
         <DialogTitle>
-          {isEdit ? "Edit Leave Type" : "Add Leave Type"}
+          {isEdit
+            ? "Edit Leave Type"
+            : "Add Leave Type"}
         </DialogTitle>
 
         <DialogContent>
-
           <TextField
             label="Leave Type"
             fullWidth
             margin="normal"
             value={leaveType}
-            onChange={(e) => setLeaveType(e.target.value)}
+            onChange={(e) =>
+              setLeaveType(
+                e.target.value
+              )
+            }
           />
 
           <TextField
@@ -219,14 +207,20 @@ const LeaveSettings = () => {
             fullWidth
             margin="normal"
             value={totalLeaves}
-            onChange={(e) => setTotalLeaves(e.target.value)}
+            onChange={(e) =>
+              setTotalLeaves(
+                e.target.value
+              )
+            }
           />
-
         </DialogContent>
 
         <DialogActions>
-
-          <Button onClick={() => setOpen(false)}>
+          <Button
+            onClick={() =>
+              setOpen(false)
+            }
+          >
             Cancel
           </Button>
 
@@ -236,10 +230,8 @@ const LeaveSettings = () => {
           >
             Save
           </Button>
-
         </DialogActions>
       </Dialog>
-
     </Box>
   );
 };

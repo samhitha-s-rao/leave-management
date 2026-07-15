@@ -36,6 +36,8 @@ export const getMyLeaves = () => {
   return api.get("/Leave/my-requests");
 };
 
+export const getEmployeeLeaveHistory = () =>
+  api.get("/leave/employee-history");
 
 // Pending Leaves (Manager/Admin)
 export const getPendingLeaves = () => {

@@ -2,13 +2,6 @@ import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   IconButton,
   Menu,
   MenuItem,
@@ -27,7 +20,10 @@ import {
   getPendingLeaves,
   leaveDecision,
 } from "../../services/leaveService";
-import type {  LeaveRequest } from "../../types";
+
+import type { LeaveRequest } from "../../types";
+
+import AppTable from "../../components/common/AppTable";
 
 const ViewRequests = () => {
   const navigate = useNavigate();
@@ -123,6 +119,69 @@ const ViewRequests = () => {
     setOpenRejectDialog(false);
   };
 
+  const columns = [
+    {
+      field: "userId",
+      headerName: "Employee ID",
+    },
+    {
+      field: "userName",
+      headerName: "Employee Name",
+    },
+    {
+      field: "departmentName",
+      headerName: "Department",
+    },
+    {
+      field: "leaveTypeName",
+      headerName: "Leave Type",
+    },
+    {
+      field: "startDate",
+      headerName: "From Date",
+    },
+    {
+      field: "endDate",
+      headerName: "To Date",
+    },
+    {
+      field: "numberOfDays",
+      headerName: "Days",
+      align: "center" as const,
+    },
+    {
+      field: "reason",
+      headerName: "Reason",
+    },
+    {
+      field: "appliedDate",
+      headerName: "Applied On",
+      render: (row: LeaveRequest) =>
+        row.appliedDate
+          ? new Date(row.appliedDate)
+              .toLocaleDateString("en-GB")
+              .replace(/\//g, "-")
+          : "-",
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      align: "center" as const,
+      render: (row: LeaveRequest) => (
+        <IconButton
+          onClick={(e) =>
+            handleClick(
+              e,
+              row.leaveRequestId
+            )
+          }
+        >
+          <MoreVertIcon />
+        </IconButton>
+      ),
+    },
+  ];
+
   return (
     <Box sx={{ p: 4 }}>
       <Button
@@ -139,75 +198,11 @@ const ViewRequests = () => {
         Leave Requests
       </Typography>
 
-      <TableContainer component={Paper}>
-        <Table>
-
-          <TableHead>
-            <TableRow>
-              <TableCell><b>Employee ID</b></TableCell>
-              <TableCell><b>Employee Name</b></TableCell>
-              <TableCell><b>Department</b></TableCell>
-              <TableCell><b>Leave Type</b></TableCell>
-              <TableCell><b>From Date</b></TableCell>
-              <TableCell><b>To Date</b></TableCell>
-              <TableCell align="center"><b>Days</b></TableCell>
-              <TableCell><b>Reason</b></TableCell>
-              <TableCell><b>Applied On</b></TableCell>
-              <TableCell align="center"><b>Action</b></TableCell>
-            </TableRow>
-          </TableHead>
-
-          <TableBody>
-
-            {requests.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={10}
-                  align="center"
-                >
-                  No pending leave requests.
-                </TableCell>
-              </TableRow>
-            ) : (
-              requests.map((request) => (
-                <TableRow key={request.leaveRequestId}>
-              <TableCell>{request.userId}</TableCell>
-              <TableCell>{request.userName}</TableCell>
-              <TableCell>{request.departmentName}</TableCell>
-              <TableCell>{request.leaveTypeName}</TableCell>
-              <TableCell>{request.startDate}</TableCell>
-              <TableCell>{request.endDate}</TableCell>
-
-              <TableCell align="center">
-                {request.numberOfDays}
-              </TableCell>
-
-              <TableCell>{request.reason}</TableCell>
-
-              <TableCell>
-                {request.appliedDate ? new Date(request.appliedDate).toLocaleDateString("en-GB").replace(/\//g, "-"): "-"}
-              </TableCell>
-
-              <TableCell align="center">
-                <IconButton
-                  onClick={(e) =>
-                    handleClick(
-                      e,
-                      request.leaveRequestId
-                    )
-                  }
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-              ))
-            )}
-
-          </TableBody>
-
-        </Table>
-      </TableContainer>
+      <AppTable
+        columns={columns}
+        rows={requests}
+        noDataMessage="No pending leave requests."
+      />
 
       <Menu
         anchorEl={anchorEl}
