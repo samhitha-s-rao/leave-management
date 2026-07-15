@@ -117,7 +117,13 @@ builder.Services.AddScoped<ILeaveService, LeaveService>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<ILeaveTypeService, LeaveTypeService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
+builder.Services.AddScoped<
+    ILeaveBalanceRepository,
+    LeaveBalanceRepository>();
 
+builder.Services.AddScoped<
+    ILeaveBalanceService,
+    LeaveBalanceService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",

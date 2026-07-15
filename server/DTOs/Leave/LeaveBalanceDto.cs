@@ -1,5 +1,12 @@
-public class LeaveBalanceDto
+namespace server.DTOs.Leave
 {
-    public string LeaveTypeName { get; set; } = string.Empty;
-    public int RemainingLeaves { get; set; }
+    public class LeaveBalanceDto
+    {
+        public int LeaveTypeId { get; set; }
+
+        public string LeaveTypeName { get; set; }
+            = string.Empty;
+
+        public int RemainingLeaves { get; set; }
+    }
 }

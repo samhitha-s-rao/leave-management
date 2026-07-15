@@ -7,9 +7,12 @@ namespace server.Services
 {   public class LeaveService : ILeaveService
     {
         private readonly ILeaveRepository _leaveRepository;
-        public LeaveService(ILeaveRepository leaveRepository)
+        private readonly ILeaveBalanceService _leaveBalanceService;
+        
+        public LeaveService(ILeaveRepository leaveRepository,ILeaveBalanceService leaveBalanceService)
         {
             _leaveRepository = leaveRepository;
+            _leaveBalanceService = leaveBalanceService;
         }
 
         public async Task<LeaveResponseDto> ApplyLeaveAsync(
@@ -25,7 +28,24 @@ namespace server.Services
             var days =
                 dto.EndDate.DayNumber -
                 dto.StartDate.DayNumber + 1;
+            var balances =
+                await _leaveBalanceService
+                    .GetMyBalanceAsync(userId);
 
+            var balance = balances.FirstOrDefault(
+                b => b.LeaveTypeId == dto.LeaveTypeId);
+
+            if (balance == null)
+            {
+                throw new Exception(
+                    "Leave balance not configured.");
+            }
+
+            if (balance.RemainingLeaves < days)
+            {
+                throw new Exception(
+                    $"Only {balance.RemainingLeaves} leave(s) available.");
+            }
             var leaveRequest = new LeaveRequest
             {
                 UserId = userId,
@@ -136,6 +156,15 @@ namespace server.Services
             leave.ManagerRemarks = dto.ManagerRemarks;
             leave.ApprovedBy = approverId;
             leave.ActionDate = DateTime.UtcNow;
+
+            if (dto.Status == "Approved")
+            {
+                await _leaveBalanceService
+                    .DeductLeaveBalanceAsync(
+                        leave.UserId,
+                        leave.LeaveTypeId,
+                        (int)leave.NumberOfDays);
+            }
 
             await _leaveRepository.UpdateLeaveAsync(leave);
 

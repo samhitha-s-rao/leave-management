@@ -14,16 +14,18 @@ namespace server.Services
         private readonly IRoleRepository _roleRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IMapper _mapper;
-
+        private readonly ILeaveBalanceRepository _leaveBalanceRepository;
         public UserService(
             IUserRepository userRepository,
             IRoleRepository roleRepository,
             IDepartmentRepository departmentRepository,
+            ILeaveBalanceRepository leaveBalanceRepository,
             IMapper mapper)
         {
             _userRepository = userRepository;
             _roleRepository = roleRepository;
             _departmentRepository = departmentRepository;
+            _leaveBalanceRepository = leaveBalanceRepository;
             _mapper = mapper;
         }
 
@@ -70,7 +72,7 @@ namespace server.Services
             user.IsActive = true;
 
             user = await _userRepository.CreateAsync(user);
-
+            await _leaveBalanceRepository.InitializeLeaveBalancesAsync(user.UserId);
             user = await _userRepository.GetByIdAsync(user.UserId)
                 ?? throw new Exception("Failed to retrieve created user.");
 
