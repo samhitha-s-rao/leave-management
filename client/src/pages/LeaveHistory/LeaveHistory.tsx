@@ -16,37 +16,27 @@ import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { useEffect, useState } from "react";
 import { getMyLeaves } from "../../services/leaveService";
+import type { LeaveHistory} from "../../types";
+import AppTable from "../../components/common/AppTable";
 
-
-interface LeaveHistory {
-  leaveRequestId: number;
-  leaveTypeName: string;
-  startDate: string;
-  endDate: string;
-  numberOfDays: number;
-  reason: string;
-  status: string;
-}
-
-
-const employeeHistory = [
-  {
-    employee: "John",
-    role: "Employee",
-    type: "Casual Leave",
-    from: "10-Jul-2026",
-    to: "12-Jul-2026",
-    status: "Approved",
-  },
-  {
-    employee: "David",
-    role: "Manager",
-    type: "Sick Leave",
-    from: "15-Jul-2026",
-    to: "16-Jul-2026",
-    status: "Pending",
-  },
-];
+// const employeeHistory = [
+//   {
+//     employee: "John",
+//     role: "Employee",
+//     type: "Casual Leave",
+//     from: "10-Jul-2026",
+//     to: "12-Jul-2026",
+//     status: "Approved",
+//   },
+//   {
+//     employee: "David",
+//     role: "Manager",
+//     type: "Sick Leave",
+//     from: "15-Jul-2026",
+//     to: "16-Jul-2026",
+//     status: "Pending",
+//   },
+// ];
 
 
 const LeaveHistory = () => {

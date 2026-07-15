@@ -208,7 +208,6 @@ namespace server.Migrations
                     b.ToTable("LeaveRequests");
                 });
 
-
             modelBuilder.Entity("server.Models.LeaveType", b =>
                 {
                     b.Property<int>("LeaveTypeId")
@@ -342,8 +341,8 @@ namespace server.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");

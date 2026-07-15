@@ -30,22 +30,22 @@ import { useNavigate } from "react-router-dom";
 const LeaveSettings = () => {
   const navigate = useNavigate();
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([
-    {
-      id: 1,
-      leaveType: "Casual Leave",
-      totalLeaves: 10,
-    },
-    {
-      id: 2,
-      leaveType: "Sick Leave",
-      totalLeaves: 15,
-    },
-    {
-      id: 3,
-      leaveType: "Earned Leave",
-      totalLeaves: 20,
-    },
-  ]);
+  {
+    leaveTypeId: 1,
+    leaveTypeName: "Casual Leave",
+    allocatedLeaves: 10,
+  },
+  {
+    leaveTypeId: 2,
+    leaveTypeName: "Sick Leave",
+    allocatedLeaves: 15,
+  },
+  {
+    leaveTypeId: 3,
+    leaveTypeName: "Earned Leave",
+    allocatedLeaves: 20,
+  },
+]);
 
   const [open, setOpen] = useState(false);
 
@@ -67,9 +67,9 @@ const LeaveSettings = () => {
 
   const handleEdit = (leave: LeaveType) => {
     setIsEdit(true);
-    setCurrentId(leave.id);
-    setLeaveType(leave.leaveType);
-    setTotalLeaves(leave.totalLeaves.toString());
+    setCurrentId(leave.leaveTypeId);
+    setLeaveType(leave.leaveTypeName);
+    setTotalLeaves(leave.allocatedLeaves.toString());
     setOpen(true);
   };
 
@@ -79,12 +79,10 @@ const LeaveSettings = () => {
     if (isEdit) {
       setLeaveTypes((prev) =>
         prev.map((item) =>
-          item.id === currentId
-            ? {
-                ...item,
-                leaveType,
-                totalLeaves: Number(totalLeaves),
-              }
+          item.leaveTypeId === currentId? {...item,
+            leaveTypeName: leaveType,
+            allocatedLeaves: Number(totalLeaves),
+          }
             : item
         )
       );
@@ -92,10 +90,10 @@ const LeaveSettings = () => {
       setLeaveTypes((prev) => [
         ...prev,
         {
-          id: Date.now(),
-          leaveType,
-          totalLeaves: Number(totalLeaves),
-        },
+        leaveTypeId: Date.now(),
+        leaveTypeName: leaveType,
+        allocatedLeaves: Number(totalLeaves),
+      },
       ]);
     }
 
@@ -103,8 +101,10 @@ const LeaveSettings = () => {
   };
 
   const handleDelete = (id: number) => {
-    setLeaveTypes((prev) => prev.filter((item) => item.id !== id));
-  };
+  setLeaveTypes((prev) =>
+    prev.filter((item) => item.leaveTypeId !== id)
+  );
+};
 
   return (
     <Box p={4}>
@@ -157,14 +157,14 @@ const LeaveSettings = () => {
           <TableBody>
 
             {leaveTypes.map((leave) => (
-              <TableRow key={leave.id}>
+              <TableRow key={leave.leaveTypeId}>
 
                 <TableCell>
-                  {leave.leaveType}
+                  {leave.leaveTypeName}
                 </TableCell>
 
                 <TableCell>
-                  {leave.totalLeaves}
+                  {leave.allocatedLeaves}
                 </TableCell>
 
                 <TableCell align="center">
@@ -178,7 +178,7 @@ const LeaveSettings = () => {
 
                   <IconButton
                     color="error"
-                    onClick={() => handleDelete(leave.id)}
+                    onClick={() => handleDelete(leave.leaveTypeId)}
                   >
                     <DeleteIcon />
                   </IconButton>

@@ -6,6 +6,5 @@ namespace server.DTOs
 
         public string Address { get; set; } = string.Empty;
 
-        public string ProfilePictureUrl { get; set; } = string.Empty;
     }
 }

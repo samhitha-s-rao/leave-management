@@ -46,7 +46,31 @@ export interface MockUser {
 
 
 export interface LeaveType {
-  id: number;
-  leaveType: string;
-  totalLeaves: number;
+  leaveTypeId: number;
+  leaveTypeName: string;
+  allocatedLeaves: number;
+}
+
+
+export interface LeaveRequest {
+  leaveRequestId: number;
+  userId: number;
+  userName: string;
+  departmentName: string;
+  leaveTypeName: string;
+  startDate: string;
+  endDate: string;
+  numberOfDays: number;
+  reason: string;
+  appliedDate: string | null;
+}
+
+export interface LeaveHistory {
+  leaveRequestId: number;
+  leaveTypeName: string;
+  startDate: string;
+  endDate: string;
+  numberOfDays: number;
+  reason: string;
+  status: string;
 }

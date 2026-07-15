@@ -12,8 +12,8 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260714054754_AddUserFields")]
-    partial class AddUserFields
+    [Migration("20260714123027_AddCreatedDateToLeaveRequest")]
+    partial class AddCreatedDateToLeaveRequest
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -168,6 +168,9 @@ namespace server.Migrations
 
                     b.Property<int?>("ApprovedBy")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
@@ -341,8 +344,8 @@ namespace server.Migrations
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)");
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
 
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");

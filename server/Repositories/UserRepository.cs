@@ -18,53 +18,6 @@ namespace server.Repositories
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users
-<<<<<<< HEAD
-                .Include(u => u.Role)
-                .Include(u => u.Department)
-                .Include(u => u.Manager)
-                .ToListAsync();
-        }
-
-        public async Task<User?> GetByIdAsync(int id)
-        {
-            return await _context.Users
-                .Include(u => u.Role)
-                .Include(u => u.Department)
-                .Include(u => u.Manager)
-                .FirstOrDefaultAsync(u => u.UserId == id);
-        }
-
-        public async Task<User?> GetUserByEmailAsync(string email)
-{
-    return await _context.Users
-        .Include(u => u.Role)
-        .Include(u => u.Department)
-        .Include(u => u.Manager)
-        .FirstOrDefaultAsync(u => u.Email == email);
-}
-
-        public async Task AddAsync(User user)
-        {
-            await _context.Users.AddAsync(user);
-        }
-
-        public Task UpdateAsync(User user)
-        {
-            _context.Users.Update(user);
-            return Task.CompletedTask;
-        }
-
-        public Task DeleteAsync(User user)
-        {
-            _context.Users.Remove(user);
-            return Task.CompletedTask;
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _context.SaveChangesAsync();
-        }
-=======
                 .AsNoTracking()
                 .Include(u => u.Role)
                 .Include(u => u.Department)
@@ -191,6 +144,5 @@ namespace server.Repositories
             return await _context.Users
                 .AnyAsync(u => u.UserId == id);
         }
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
     }
 }

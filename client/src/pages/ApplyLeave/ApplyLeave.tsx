@@ -11,17 +11,12 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import "./ApplyLeave.css";
-
+import type {  LeaveType } from "../../types";
 import {
   applyLeave,
   getLeaveTypes,
 } from "../../services/leaveService";
 
-interface LeaveType {
-  leaveTypeId: number;
-  leaveTypeName: string;
-  allocatedLeaves: number;
-}
 
 const ApplyLeave = () => {
   const navigate = useNavigate();

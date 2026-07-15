@@ -8,17 +8,6 @@ namespace server.Repositories.Interfaces
 
         Task<User?> GetByIdAsync(int id);
 
-<<<<<<< HEAD
-        Task<User?> GetUserByEmailAsync(string email);
-
-        Task AddAsync(User user);
-
-        Task UpdateAsync(User user);
-
-        Task DeleteAsync(User user);
-
-        Task SaveChangesAsync();
-=======
         Task<User?> GetByEmailAsync(string email);
 
         Task<IEnumerable<User>> GetAdminsAsync();
@@ -39,6 +28,5 @@ namespace server.Repositories.Interfaces
         Task<IEnumerable<User>> GetByManagerIdAsync(int managerId);
         Task<IEnumerable<User>> GetActiveUsersAsync();
         Task<bool> EmailExistsAsync(string email, int excludeUserId);
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
     }
 }

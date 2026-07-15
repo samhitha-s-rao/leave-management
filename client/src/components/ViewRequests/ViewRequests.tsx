@@ -27,19 +27,7 @@ import {
   getPendingLeaves,
   leaveDecision,
 } from "../../services/leaveService";
-
-interface LeaveRequest {
-  leaveRequestId: number;
-  userId: number;
-  userName: string;
-  departmentName: string;
-  leaveTypeName: string;
-  startDate: string;
-  endDate: string;
-  numberOfDays: number;
-  reason: string;
-  appliedDate: string | null;
-}
+import type {  LeaveRequest } from "../../types";
 
 const ViewRequests = () => {
   const navigate = useNavigate();

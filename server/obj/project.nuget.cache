@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sBGf8Ov+e0U=",
+  "dgSpecHash": "cq3JAQ1euNs=",
   "success": true,
-  "projectFilePath": "D:\\old files\\Desktop\\Leave-Management-System\\server\\server.csproj",
+  "projectFilePath": "D:\\Leave-Management-System\\server\\server.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Admin\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\Admin\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
@@ -51,16 +51,13 @@
   ],
   "logs": [
     {
-      "code": "NU1903",
+      "code": "NU1900",
       "level": "Warning",
-      "message": "Package 'AutoMapper' 12.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
-      "projectPath": "D:\\old files\\Desktop\\Leave-Management-System\\server\\server.csproj",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "projectPath": "D:\\Leave-Management-System\\server\\server.csproj",
       "warningLevel": 1,
-      "filePath": "D:\\old files\\Desktop\\Leave-Management-System\\server\\server.csproj",
-      "libraryId": "AutoMapper",
-      "targetGraphs": [
-        "net10.0"
-      ]
+      "filePath": "D:\\Leave-Management-System\\server\\server.csproj",
+      "targetGraphs": []
     }
   ]
 }

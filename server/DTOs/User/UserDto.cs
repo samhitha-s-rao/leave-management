@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-using System;
-
-namespace server.DTOs
-=======
 namespace server.DTOs.User
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
 {
     public class UserDto
     {
@@ -16,19 +10,11 @@ namespace server.DTOs.User
 
         public string PhoneNumber { get; set; } = string.Empty;
 
-<<<<<<< HEAD
-        public string Address { get; set; } = string.Empty;
-
-        public string DateofJoining { get; set; } = string.Empty;
-
-        public string ProfilePictureUrl { get; set; } = string.Empty;
-=======
         public string? Address { get; set; }
 
         public string Designation { get; set; } = string.Empty;
 
         public DateOnly DateOfJoining { get; set; }
->>>>>>> d913bddf6e86c523d8d43a21c9b82bbf6a2440cc
 
         public bool IsActive { get; set; }
 
