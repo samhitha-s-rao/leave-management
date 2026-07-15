@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import React from "react";
 
+
 interface Column {
   field: string;
   headerName: string;
@@ -20,12 +21,16 @@ interface AppTableProps {
   columns: Column[];
   rows: any[];
   noDataMessage?: string;
+  getRowStyle?: (
+    row: any
+  ) => React.CSSProperties;
 }
 
 const AppTable = ({
   columns,
   rows,
   noDataMessage = "No records found",
+  getRowStyle,
 }: AppTableProps) => {
   return (
     <TableContainer component={Paper}>
@@ -55,7 +60,11 @@ const AppTable = ({
             </TableRow>
           ) : (
             rows.map((row, index) => (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                style={getRowStyle?.(row)}
+                hover
+              >
                 {columns.map((column) => (
                   <TableCell
                     key={column.field}

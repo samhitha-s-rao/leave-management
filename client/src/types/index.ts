@@ -42,6 +42,9 @@ export interface MockUser {
   department: string;
   designation: string;
   dateOfJoining: string;
+
+  profileImage?: string;
+  active?: boolean;
 }
 
 
@@ -86,3 +89,30 @@ export interface EmployeeLeaveHistory {
   numberOfDays: number;
   status: string;
 }
+export interface Employee {
+  id: number;
+  name: string;
+  email: string;
+  role: "Employee" | "Manager" | "Admin";
+  department: string;
+  designation: string;
+  phone: string;
+  address: string;
+  dateOfJoining: string;
+  profileImage?: string;
+  active: boolean;
+}
+
+export interface EmployeeEditDialogProps {
+  open: boolean;
+  employee: Employee | null;
+  onClose: () => void;
+  onSave: (employee: Employee) => void;
+}
+
+export interface EmployeeActionMenuProps {
+  active: boolean;
+  onEdit: () => void;
+  onToggleStatus: () => void;
+}
+

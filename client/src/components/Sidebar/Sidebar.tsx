@@ -58,6 +58,11 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   icon: <SettingsIcon fontSize="small" />,
   roles: ["Admin"],
 },
+{
+  text: "Employee List",
+  icon: <SettingsIcon fontSize="small" />,
+  roles: ["Admin"],
+},
   
 {
   text: 'Attendance',
@@ -136,6 +141,10 @@ if (item.text === "Logout") {
 
       case "Employee Attendance":
       navigate("/employee-attendance");
+      break;
+
+      case "Employee List":
+      navigate("/employee-list");
       break;
 
     case "View Requests":
