@@ -1,4 +1,4 @@
-import { useState } from "react";
+
 import {
   Button,
   Dialog,
@@ -11,10 +11,15 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import type { Department,Role,Manager } from "../../types/index";
 import "./Dashboard.css";
 import Cards from "../../components/Card/Card";
-
-
+import type { SelectChangeEvent } from "@mui/material";
+import { useState, useEffect } from "react";
+import { createEmployee } from "../../api/employeeApi";
+import { getDepartments } from "../../api/departmentApi";
+import { getRoles } from "../../api/roleApi";
+import { getManagers } from "../../api/managerApi";
 const Dashboard = () => {
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
@@ -26,18 +31,45 @@ const Dashboard = () => {
 
   const [openEmployeeModal, setOpenEmployeeModal] = useState(false);
 
-  const [employeeData, setEmployeeData] = useState({
-    name: "",
-    role: "",
-    email: "",
-    phone: "",
-    address: "",
-    password: "",
-    department: "",
-    designation: "",
-    dateOfJoining: "",
-    manager: "",
-  });
+const [employeeData, setEmployeeData] = useState({
+  name: "",
+  email: "",
+  password: "",
+  phoneNumber: "",
+  address: "",
+  designation: "",
+  dateOfJoining: "",
+  departmentId: "",
+  roleId: "",
+  managerId: "",
+});
+const [departments, setDepartments] = useState<Department[]>([]);
+const [roles, setRoles] = useState<Role[]>([]);
+const [managers, setManagers] = useState<Manager[]>([]);
+useEffect(() => {
+  const loadDropdowns = async () => {
+    try {
+      const [departmentData, roleData, managerData] = await Promise.all([
+        getDepartments(),
+        getRoles(),
+        getManagers(),
+      ]);
+
+      console.log("Departments:", departmentData);
+      console.log("Roles:", roleData);
+      console.log("Managers:", managerData);
+
+      setDepartments(departmentData);
+      setRoles(roleData);
+      setManagers(managerData);
+    } catch (error) {
+      console.error("Dropdown API Error:", error);
+    }
+  };
+
+  loadDropdowns();
+}, []);
+
 
   if (!user) return null;
 
@@ -62,7 +94,9 @@ const Dashboard = () => {
   };
 
 const handleInputChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any
+  e:
+    | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    | SelectChangeEvent
 ) => {
   const { name, value } = e.target;
 
@@ -71,30 +105,42 @@ const handleInputChange = (
     [name]: value,
   }));
 };
-
-  const handleCreateEmployee = () => {
-    console.log("Employee Data:", employeeData);
-
-    // API Call Here
-    // axios.post("/api/employees", employeeData)
+const handleCreateEmployee = async () => {
+  try {
+    await createEmployee({
+      name: employeeData.name,
+      email: employeeData.email,
+      password: employeeData.password,
+      phoneNumber: employeeData.phoneNumber,
+      address: employeeData.address,
+      designation: employeeData.designation,
+      dateOfJoining: employeeData.dateOfJoining,
+      departmentId: Number(employeeData.departmentId),
+      roleId: Number(employeeData.roleId),
+      managerId: Number(employeeData.managerId),
+    });
 
     alert("Employee Created Successfully");
 
     setEmployeeData({
       name: "",
-      role: "",
       email: "",
-      phone: "",
-      address: "",
       password: "",
-      department: "",
+      phoneNumber: "",
+      address: "",
       designation: "",
       dateOfJoining: "",
-      manager: "",
+      departmentId: "",
+      roleId: "",
+      managerId: "",
     });
 
     setOpenEmployeeModal(false);
-  };
+  } catch (error) {
+    console.error(error);
+    alert("Failed to create employee");
+  }
+};
 
   return (
     <div className="dashboard">
@@ -181,13 +227,13 @@ const handleInputChange = (
             fullWidth
           />
 
-          <TextField
-            label="Phone Number"
-            name="phone"
-            value={employeeData.phone}
-            onChange={handleInputChange}
-            fullWidth
-          />
+    <TextField
+  label="Phone Number"
+  name="phoneNumber"
+  value={employeeData.phoneNumber}
+  onChange={handleInputChange}
+  fullWidth
+/>
 
           <TextField
             label="Address"
@@ -206,13 +252,25 @@ const handleInputChange = (
             fullWidth
           />
 
-          <TextField
-            label="Department"
-            name="department"
-            value={employeeData.department}
-            onChange={handleInputChange}
-            fullWidth
-          />
+<FormControl fullWidth>
+  <InputLabel>Department</InputLabel>
+
+  <Select
+    name="departmentId"
+    value={employeeData.departmentId}
+    onChange={handleInputChange}
+    label="Department"
+  >
+    {departments.map((department) => (
+      <MenuItem
+        key={department.departmentId}
+        value={department.departmentId}
+      >
+        {department.departmentName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
 
           <TextField
             label="Designation"
@@ -233,34 +291,44 @@ const handleInputChange = (
           />
 
           <FormControl fullWidth>
-            <InputLabel>Role</InputLabel>
-            <Select
-              name="role"
-              value={employeeData.role}
-              onChange={handleInputChange}
-              label="Role"
-            >
-              <MenuItem value="Admin">Admin</MenuItem>
-              <MenuItem value="Manager">Manager</MenuItem>
-              <MenuItem value="Employee">Employee</MenuItem>
-            </Select>
-          </FormControl>
+  <InputLabel>Role</InputLabel>
 
-          <FormControl fullWidth>
-            <InputLabel>Manager</InputLabel>
-            <Select
-              name="manager"
-              value={employeeData.manager}
-              onChange={handleInputChange}
-              label="Manager"
-            >
-              <MenuItem value="John Doe">John Doe</MenuItem>
-              <MenuItem value="Peter Smith">Peter Smith</MenuItem>
-              <MenuItem value="Michael Brown">
-                Michael Brown
-              </MenuItem>
-            </Select>
-          </FormControl>
+  <Select
+    name="roleId"
+    value={employeeData.roleId}
+    onChange={handleInputChange}
+    label="Role"
+  >
+    {roles.map((role) => (
+      <MenuItem
+        key={role.roleId}
+        value={role.roleId}
+      >
+        {role.roleName}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+<FormControl fullWidth>
+  <InputLabel>Manager</InputLabel>
+
+  <Select
+    name="managerId"
+    value={employeeData.managerId}
+    onChange={handleInputChange}
+    label="Manager"
+  >
+    {managers.map((manager) => (
+      <MenuItem
+        key={manager.userId}
+        value={manager.userId}
+      >
+        {manager.name}
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
         </DialogContent>
 
         <DialogActions>

@@ -1,4 +1,5 @@
 import "./Card.css";
+import { useEffect, useState } from "react";
 
 import {
   Box,
@@ -10,30 +11,55 @@ import {
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import type {  CardProps } from "../../types";
 
+import type { CardProps } from "../../types";
 
-const leaveData = {
-  Employee: {
-    casual: 6,
-    earned: 14,
-    Sick : 15,
-
-  },
-  Manager: {
-    casual: 8,
-    earned: 18,
-    Sick  : 15,
-  },
-  Admin: {
-    casual: 10,
-    earned: 20,
-    Sick  : 15,
-  },
-};
+import { getMyLeaveBalance } from "../../api/leaveBalanceApi";
 
 const Cards = ({ role }: CardProps) => {
-  const data = leaveData[role as keyof typeof leaveData];
+  const [balances, setBalances] = useState({
+    casual: 0,
+    earned: 0,
+    sick: 0,
+    wfh: 0,
+  });
+
+  useEffect(() => {
+    const loadBalances = async () => {
+      try {
+        const data = await getMyLeaveBalance();
+
+        setBalances({
+          casual:
+            data.find(
+              (x: any) => x.leaveTypeId === 1
+            )?.remainingLeaves ?? 0,
+
+          sick:
+            data.find(
+              (x: any) => x.leaveTypeId === 2
+            )?.remainingLeaves ?? 0,
+
+          earned:
+            data.find(
+              (x: any) => x.leaveTypeId === 3
+            )?.remainingLeaves ?? 0,
+
+          wfh:
+            data.find(
+              (x: any) => x.leaveTypeId === 4
+            )?.remainingLeaves ?? 0,
+        });
+      } catch (error) {
+        console.error(
+          "Failed to load leave balances",
+          error
+        );
+      }
+    };
+
+    loadBalances();
+  }, []);
 
   return (
     <Box className="employeeCards">
@@ -45,7 +71,6 @@ const Cards = ({ role }: CardProps) => {
               Casual Leaves
             </Typography>
 
-
             <EventAvailableIcon color="primary" />
           </Box>
 
@@ -54,7 +79,7 @@ const Cards = ({ role }: CardProps) => {
             color="primary"
             sx={{ mt: 3 }}
           >
-            {data.casual}
+            {balances.casual}
           </Typography>
 
           <Typography color="text.secondary">
@@ -79,7 +104,7 @@ const Cards = ({ role }: CardProps) => {
             color="primary"
             sx={{ mt: 3 }}
           >
-            {data.earned}
+            {balances.earned}
           </Typography>
 
           <Typography color="text.secondary">
@@ -88,8 +113,8 @@ const Cards = ({ role }: CardProps) => {
         </CardContent>
       </Card>
 
-
-  <Card className="dashboardCard">
+      {/* Sick Leave Card */}
+      <Card className="dashboardCard">
         <CardContent>
           <Box className="cardHeader">
             <Typography variant="h6">
@@ -104,7 +129,7 @@ const Cards = ({ role }: CardProps) => {
             color="primary"
             sx={{ mt: 3 }}
           >
-            {data.Sick}
+            {balances.sick}
           </Typography>
 
           <Typography color="text.secondary">

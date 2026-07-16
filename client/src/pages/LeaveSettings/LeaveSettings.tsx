@@ -20,28 +20,32 @@ import { useNavigate } from "react-router-dom";
 
 import type { LeaveType } from "../../types";
 import AppTable from "../../components/common/AppTable";
+import { useEffect } from "react";
+
+import {
+  fetchLeaveTypes,
+  editLeaveType,
+} from "../../services/leaveTypeService";
 
 const LeaveSettings = () => {
   const navigate = useNavigate();
 
-  const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([
-    {
-      leaveTypeId: 1,
-      leaveTypeName: "Casual Leave",
-      allocatedLeaves: 10,
-    },
-    {
-      leaveTypeId: 2,
-      leaveTypeName: "Sick Leave",
-      allocatedLeaves: 15,
-    },
-    {
-      leaveTypeId: 3,
-      leaveTypeName: "Earned Leave",
-      allocatedLeaves: 20,
-    },
-  ]);
+  const [leaveTypes, setLeaveTypes] =
+  useState<LeaveType[]>([]);
 
+  const loadLeaveTypes = async () => {
+  try {
+    const data =
+      await fetchLeaveTypes();
+
+    setLeaveTypes(data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+useEffect(() => {
+  loadLeaveTypes();
+}, []);
   const [open, setOpen] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
 
@@ -49,14 +53,6 @@ const LeaveSettings = () => {
 
   const [leaveType, setLeaveType] = useState("");
   const [totalLeaves, setTotalLeaves] = useState("");
-
-  const handleAdd = () => {
-    setIsEdit(false);
-    setCurrentId(null);
-    setLeaveType("");
-    setTotalLeaves("");
-    setOpen(true);
-  };
 
   const handleEdit = (leave: LeaveType) => {
     setIsEdit(true);
@@ -66,34 +62,26 @@ const LeaveSettings = () => {
     setOpen(true);
   };
 
-  const handleSave = () => {
-    if (!leaveType || !totalLeaves) return;
+  const handleSave = async () => {
+  if (!leaveType || !totalLeaves)
+    return;
 
-    if (isEdit) {
-      setLeaveTypes((prev) =>
-        prev.map((item) =>
-          item.leaveTypeId === currentId
-            ? {
-                ...item,
-                leaveTypeName: leaveType,
-                allocatedLeaves: Number(totalLeaves),
-              }
-            : item
-        )
+  try {
+    if (isEdit && currentId) {
+      await editLeaveType(
+        currentId,
+        leaveType,
+        Number(totalLeaves)
       );
-    } else {
-      setLeaveTypes((prev) => [
-        ...prev,
-        {
-          leaveTypeId: Date.now(),
-          leaveTypeName: leaveType,
-          allocatedLeaves: Number(totalLeaves),
-        },
-      ]);
+
+      await loadLeaveTypes();
     }
 
     setOpen(false);
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   const handleDelete = (id: number) => {
     setLeaveTypes((prev) =>
@@ -161,13 +149,6 @@ const LeaveSettings = () => {
           Leave Settings
         </Typography>
 
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleAdd}
-        >
-          Add Leave Type
-        </Button>
       </Box>
 
       <AppTable

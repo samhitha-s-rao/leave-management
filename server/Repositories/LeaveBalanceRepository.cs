@@ -89,5 +89,24 @@ namespace server.Repositories
     Console.WriteLine(
         "Balances created successfully");
 }
+
+public async Task UpdateBalancesForLeaveTypeAsync(int leaveTypeId,int difference)
+        {
+            var balances = await _context.LeaveBalances
+                .Where(lb => lb.LeaveTypeId == leaveTypeId)
+                .ToListAsync();
+
+            foreach (var balance in balances)
+            {
+                balance.RemainingLeaves += difference;
+
+                if (balance.RemainingLeaves < 0)
+                {
+                    balance.RemainingLeaves = 0;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace server.Repositories.Interfaces
         Task UpdateLeaveBalanceAsync(
             LeaveBalance leaveBalance);
 
-        Task InitializeLeaveBalancesAsync(int employeeId);    
+        Task InitializeLeaveBalancesAsync(int employeeId);   
+
+        Task UpdateBalancesForLeaveTypeAsync(int leaveTypeId,int difference); 
     }
 }

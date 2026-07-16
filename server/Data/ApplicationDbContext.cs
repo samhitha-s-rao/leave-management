@@ -220,13 +220,6 @@ modelBuilder.Entity<LeaveType>().HasData(
         LeaveTypeId = 3,
         LeaveTypeName = "Earned Leave",
         AllocatedLeaves = 15
-    },
-
-    new LeaveType
-    {
-        LeaveTypeId = 4,
-        LeaveTypeName = "Work From Home",
-        AllocatedLeaves = 24
     }
 
 );

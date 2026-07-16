@@ -7,5 +7,8 @@ namespace server.Repositories.Interfaces
         Task<IEnumerable<LeaveType>> GetAllAsync();
 
         Task<LeaveType?> GetByIdAsync(int id);
+
+        Task UpdateAsync(LeaveType leaveType);
+        
     }
 }

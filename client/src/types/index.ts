@@ -31,6 +31,10 @@ export interface Holiday {
   date: string;
 }
 
+export interface CardProps {
+role: string;
+}
+
 export interface MockUser {
   id: number;
   name: string;
@@ -45,6 +49,21 @@ export interface MockUser {
 
   profileImage?: string;
   active?: boolean;
+}
+
+export interface Department {
+  departmentId: number;
+  departmentName: string;
+}
+
+export interface Role {
+  roleId: number;
+  roleName: string;
+}
+
+export interface Manager {
+  userId: number;
+  name: string;
 }
 
 
