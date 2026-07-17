@@ -1,48 +1,54 @@
 import { Box, Card, Typography } from "@mui/material";
 
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import WeekendIcon from "@mui/icons-material/Weekend";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 
-import { summary } from "./attendenceData";
+import type { MonthlyAttendance } from "../../api/attendanceApi";
 
-const cards = [
-  {
-    title: "Present",
-    value: summary.present,
-    icon: <CheckCircleIcon color="success" />,
-  },
-  {
-    title: "Leave",
-    value: summary.leave,
-    icon: <EventAvailableIcon color="primary" />,
-  },
-  {
-    title: "Absent",
-    value: summary.absent,
-    icon: <EventBusyIcon color="error" />,
-  },
-  {
-    title: "Half Day",
-    value: summary.halfDay,
-    icon: <AccessTimeIcon color="warning" />,
-  },
-  {
-    title: "Weekly Off",
-    value: summary.weeklyOff,
-    icon: <WeekendIcon color="disabled" />,
-  },
-  {
-    title: "Total Days",
-    value: summary.totalDays,
-    icon: <CalendarMonthIcon color="info" />,
-  },
-];
+interface AttendanceSummaryProps {
+  attendance: MonthlyAttendance;
+}
 
-const AttendanceSummary = () => {
+const AttendanceSummary = ({
+  attendance,
+}: AttendanceSummaryProps) => {
+  const cards = [
+    {
+      title: "Present",
+      value: attendance.present,
+      icon: <CheckCircleIcon color="success" />,
+    },
+    {
+      title: "Absent",
+      value: attendance.absent,
+      icon: <EventBusyIcon color="error" />,
+    },
+    {
+      title: "Leave",
+      value: attendance.leave,
+      icon: <EventAvailableIcon color="primary" />,
+    },
+    {
+      title: "Half Day",
+      value: attendance.halfDay,
+      icon: <AccessTimeIcon color="warning" />,
+    },
+    {
+      title: "Weekly Off",
+      value: attendance.weeklyOff,
+      icon: <WeekendIcon color="disabled" />,
+    },
+    {
+      title: "Total Days",
+      value: attendance.totalDays,
+      icon: <CalendarMonthIcon color="info" />,
+    },
+  ];
+
   return (
     <Box
       display="grid"

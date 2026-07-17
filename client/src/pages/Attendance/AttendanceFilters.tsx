@@ -1,134 +1,136 @@
-import { useState } from "react";
 import {
   Box,
   Typography,
-  FormControl,
-  Select,
-  MenuItem,
   Button,
 } from "@mui/material";
 
-import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import SearchIcon from "@mui/icons-material/Search";
 import FileDownloadOutlinedIcon from "@mui/icons-material/FileDownloadOutlined";
 import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { attendanceRows, summary } from "./attendenceData";
 
+import type { MonthlyAttendance } from "../../api/attendanceApi";
 
-import { mockUsers } from "../../mock/users";
+interface AttendanceFiltersProps {
+  attendance: MonthlyAttendance;
+}
 
-const AttendanceFilters = () => {
-  const [selectedEmployee, setSelectedEmployee] = useState(
-    mockUsers[0]?.email || ""
-  );
+const AttendanceFilters = ({
+  attendance,
+}: AttendanceFiltersProps) => {
 
-  const [department, setDepartment] = useState("All");
+  const handleExport = () => {
 
-  const [location, setLocation] = useState("All");
+    const exportData =
+      attendance.attendance.map((item) => ({
+        Date: new Date(
+          item.attendanceDate
+        ).toLocaleDateString(),
 
-  const handleSearch = () => {
-    console.log({
-      employee: selectedEmployee,
-      department,
-      location,
-    });
+        "Check In": item.checkInTime ?? "-",
+
+        "Check Out": item.checkOutTime ?? "-",
+
+        "Working Hours":
+          item.workingHours,
+
+        Status: item.checkInTime
+          ? "Present"
+          : "Absent",
+      }));
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(exportData);
+
+    const workbook =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      "Attendance"
+    );
+
+    XLSX.writeFile(
+      workbook,
+      "Attendance_Report.xlsx"
+    );
   };
 
- const handleExport = () => {
-  const exportData = attendanceRows.map((row) => ({
-    Day: row.day,
-    Status: row.status,
-    "In Time": row.inTime,
-    "Out Time": row.outTime,
-    "Working Hours": row.workingHours,
-    "OT Hours": row.otHours,
-    Remarks: row.remarks,
-  }));
-
-  const worksheet = XLSX.utils.json_to_sheet(exportData);
-
-  const workbook = XLSX.utils.book_new();
-
-  XLSX.utils.book_append_sheet(
-    workbook,
-    worksheet,
-    "Attendance Report"
-  );
-
-  XLSX.writeFile(workbook, "Attendance_Report.xlsx");
-};
   const handlePrint = () => {
-  const doc = new jsPDF();
 
-  doc.setFontSize(18);
+    const doc = new jsPDF();
 
-  doc.text("Attendance Report", 14, 15);
+    doc.setFontSize(18);
 
-  doc.setFontSize(11);
+    doc.text(
+      "Attendance Report",
+      14,
+      18
+    );
 
-  doc.text(
-    `Generated : ${new Date().toLocaleDateString()}`,
-    14,
-    24
-  );
+    doc.setFontSize(11);
 
-  doc.text(
-    `Present : ${summary.present}`,
-    14,
-    34
-  );
+    doc.text(
+      `Present : ${attendance.present}`,
+      14,
+      30
+    );
 
-  doc.text(
-    `Leave : ${summary.leave}`,
-    60,
-    34
-  );
+    doc.text(
+      `Absent : ${attendance.absent}`,
+      60,
+      30
+    );
 
-  doc.text(
-    `Absent : ${summary.absent}`,
-    100,
-    34
-  );
+    doc.text(
+      `Leave : ${attendance.leave}`,
+      100,
+      30
+    );
 
-  doc.text(
-    `Half Day : ${summary.halfDay}`,
-    140,
-    34
-  );
+    autoTable(doc, {
+      startY: 40,
 
-  autoTable(doc, {
-    startY: 45,
+      head: [[
+        "Date",
+        "Status",
+        "Check In",
+        "Check Out",
+        "Working Hours",
+      ]],
 
-    head: [[
-      "Day",
-      "Status",
-      "In Time",
-      "Out Time",
-      "Working Hrs",
-      "OT Hrs",
-      "Remarks",
-    ]],
+      body:
+        attendance.attendance.map(
+          (item) => [
+            new Date(
+              item.attendanceDate
+            ).toLocaleDateString(),
 
-    body: attendanceRows.map((row) => [
-      row.day,
-      row.status,
-      row.inTime,
-      row.outTime,
-      row.workingHours,
-      row.otHours,
-      row.remarks,
-    ]),
-  });
+            item.checkInTime
+              ? "Present"
+              : "Absent",
 
-  doc.save("Attendance_Report.pdf");
-};
+            item.checkInTime ??
+              "-",
+
+            item.checkOutTime ??
+              "-",
+
+            item.workingHours,
+          ]
+        ),
+    });
+
+    doc.save(
+      "Attendance_Report.pdf"
+    );
+  };
+
   return (
     <>
-      {/* Header */}
       <Box
         display="flex"
         justifyContent="space-between"
@@ -137,27 +139,34 @@ const AttendanceFilters = () => {
         flexWrap="wrap"
       >
         <Box>
-          <Typography fontSize={30} fontWeight={700}>
+
+          <Typography
+            fontSize={30}
+            fontWeight={700}
+          >
             ATTENDANCE SUMMARY
           </Typography>
 
           <Typography color="gray">
-            View attendance details for the selected month
+            View attendance details
           </Typography>
+
         </Box>
 
-        <Box display="flex" gap={2} mt={{ xs: 2, md: 0 }}>
-          {/* <Button
-            variant="outlined"
-            startIcon={<KeyboardArrowLeftIcon />}
-            endIcon={<KeyboardArrowRightIcon />}
-          >
-            July 2026
-          </Button> */}
+        <Box
+          display="flex"
+          gap={2}
+          mt={{
+            xs: 2,
+            md: 0,
+          }}
+        >
 
           <Button
             variant="outlined"
-            startIcon={<FileDownloadOutlinedIcon />}
+            startIcon={
+              <FileDownloadOutlinedIcon />
+            }
             onClick={handleExport}
           >
             Export
@@ -165,16 +174,16 @@ const AttendanceFilters = () => {
 
           <Button
             variant="outlined"
-            startIcon={<PrintOutlinedIcon />}
+            startIcon={
+              <PrintOutlinedIcon />
+            }
             onClick={handlePrint}
           >
             Print
           </Button>
+
         </Box>
       </Box>
-
-      {/* Filters */}
-      
     </>
   );
 };

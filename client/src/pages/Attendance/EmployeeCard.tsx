@@ -44,7 +44,7 @@ const EmployeeCard = ({ user }: EmployeeCardProps) => {
         </Typography>
 
         <Typography mt={1}>
-          Date of Joining :
+          {/* Date of Joining : */}
           <b> {user.dateOfJoining}</b>
         </Typography>
 
