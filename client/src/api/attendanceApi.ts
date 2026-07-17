@@ -54,3 +54,23 @@ export const getMonthlyAttendance = async (
 
   return response.data;
 };
+
+export const getEmployeeMonthlyAttendance = async (
+  userId:number,
+  month:number,
+  year:number
+) => {
+
+  const response = await api.get(
+    `/Attendance/monthly/${userId}`,
+    {
+      params:{
+        month,
+        year
+      }
+    }
+  );
+
+  return response.data;
+
+};
