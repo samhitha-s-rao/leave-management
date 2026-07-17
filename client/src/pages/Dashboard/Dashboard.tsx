@@ -20,6 +20,10 @@ import { createEmployee } from "../../api/employeeApi";
 import { getDepartments } from "../../api/departmentApi";
 import { getRoles } from "../../api/roleApi";
 import { getManagers } from "../../api/managerApi";
+import { checkIn, checkOut } from "../../api/attendanceApi";
+import { toast } from "react-toastify";
+
+
 const Dashboard = () => {
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
@@ -73,17 +77,38 @@ useEffect(() => {
 
   if (!user) return null;
 
-  const handleCheckIn = () => {
-    setIsCheckedIn(true);
-    localStorage.setItem("isCheckedIn", "true");
-    alert("Checked In Successfully");
-  };
+  const handleCheckIn = async () => {
+  try {
+    const message = await checkIn();
 
-  const handleCheckOut = () => {
+    toast.success(message);
+
+    setIsCheckedIn(true);
+
+    localStorage.setItem("isCheckedIn", "true");
+  } catch (error: any) {
+    toast.error(
+      error.response?.data || "Check In Failed"
+    );
+  }
+};
+
+  const handleCheckOut = async () => {
+  try {
+    const message = await checkOut();
+
+    toast.success(message);
+
     setIsCheckedIn(false);
+
     localStorage.setItem("isCheckedIn", "false");
-    alert("Checked Out Successfully");
-  };
+  } catch (error: any) {
+    toast.error(
+      error.response?.data || "Check Out Failed"
+    );
+  }
+};
+
 
   const handleOpenEmployeeModal = () => {
     setOpenEmployeeModal(true);

@@ -39,15 +39,6 @@ namespace server.Migrations
                     b.Property<TimeOnly?>("CheckOutTime")
                         .HasColumnType("time without time zone");
 
-                    b.Property<double>("OvertimeHours")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");

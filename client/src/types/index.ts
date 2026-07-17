@@ -22,7 +22,15 @@ export interface SidebarItem {
 }
 
 export interface EmployeeCardProps {
-  user: MockUser;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: string;
+    designation?: string;
+    department?: string;
+    dateOfJoining?: string;
+  };
 }
 
 export interface Holiday {
