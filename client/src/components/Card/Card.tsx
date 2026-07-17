@@ -11,12 +11,14 @@ import {
 
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import { useNavigate } from "react-router-dom";
 
 import type { CardProps } from "../../types";
 
 import { getMyLeaveBalance } from "../../api/leaveBalanceApi";
 
 const Cards = ({ role }: CardProps) => {
+  const navigate = useNavigate();
   const [balances, setBalances] = useState({
     casual: 0,
     earned: 0,
@@ -151,12 +153,13 @@ const Cards = ({ role }: CardProps) => {
             </Typography>
 
             <Button
-              variant="contained"
-              startIcon={<AddCircleOutlineIcon />}
-              sx={{ mt: 3 }}
-            >
-              Apply Leave
-            </Button>
+  variant="contained"
+  startIcon={<AddCircleOutlineIcon />}
+  sx={{ mt: 3 }}
+  onClick={() => navigate("/apply-leave")}
+>
+  Apply Leave
+</Button>
           </CardContent>
         </Card>
       )}

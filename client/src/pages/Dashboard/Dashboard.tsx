@@ -187,7 +187,7 @@ const handleCreateEmployee = async () => {
               {user.role === "Admin" && (
                 <Button
                   variant="contained"
-                  color="success"
+                  color="primary"
                   onClick={handleOpenEmployeeModal}
                 >
                   Create Employee
