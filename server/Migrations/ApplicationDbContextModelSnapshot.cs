@@ -39,7 +39,6 @@ namespace server.Migrations
                     b.Property<TimeOnly?>("CheckOutTime")
                         .HasColumnType("time without time zone");
 
-
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
@@ -242,7 +241,8 @@ namespace server.Migrations
                             LeaveTypeName = "Earned Leave"
                         });
                 });
-             modelBuilder.Entity("server.Models.Notification", b =>
+
+            modelBuilder.Entity("server.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
                         .ValueGeneratedOnAdd()
@@ -279,7 +279,6 @@ namespace server.Migrations
 
                     b.ToTable("Notifications");
                 });
-
 
             modelBuilder.Entity("server.Models.Role", b =>
                 {
@@ -478,6 +477,17 @@ namespace server.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("server.Models.Notification", b =>
+                {
+                    b.HasOne("server.Models.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("server.Models.User", b =>
                 {
                     b.HasOne("server.Models.Department", "Department")
@@ -530,6 +540,8 @@ namespace server.Migrations
                     b.Navigation("LeaveBalances");
 
                     b.Navigation("LeaveRequests");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

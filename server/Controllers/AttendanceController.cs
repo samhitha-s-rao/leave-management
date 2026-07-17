@@ -108,5 +108,20 @@ public async Task<IActionResult> GetMonthlyAttendance(
 
             return Ok(result);
         }
+
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpGet("monthly/{userId}")]
+        public async Task<IActionResult> GetMonthlyAttendanceByUser(
+            int userId,
+            int month,
+            int year)
+        {
+            var result = await _attendanceService.GetMonthlyAttendanceAsync(
+                userId,
+                month,
+                year);
+
+            return Ok(result);
+        }
     }
 }
