@@ -48,15 +48,16 @@ namespace server.Repositories
             if (approverRole == "Manager")
             {
                 // Current requirement:
-                query = query.Where(l => l.User.Role.RoleName == "Employee");
+                // query = query.Where(l => l.User.Role.RoleName == "Employee");
 
                 // Future:
-                // query = query.Where(l =>
-                //     l.User.ManagerId == approverId);
+                query = query.Where(l =>
+                    l.User.ManagerId == approverId);
             }
             else if (approverRole == "Admin")
             {
-                query = query.Where(l => l.User.Role.RoleName == "Manager");
+                query = query.Where(l =>
+                    l.User.ManagerId == approverId);
             }
 
             return await query

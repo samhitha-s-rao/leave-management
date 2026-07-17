@@ -9,9 +9,7 @@ namespace server.Controllers
     [Route("api/[controller]")]
     [Authorize]
     public class UsersController : ControllerBase
-    {
-        private readonly IUserService _userService;
-
+    {    private readonly IUserService _userService;
         public UsersController(IUserService userService)
         {
             _userService = userService;
@@ -98,5 +96,7 @@ namespace server.Controllers
                 message = "User deactivated successfully."
             });
         }
+
+        
     }
 }

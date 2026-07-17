@@ -69,15 +69,25 @@ namespace server.Repositories
         }
 
         public async Task<IEnumerable<User>> GetManagersAsync()
-        {
-            return await _context.Users
-                .AsNoTracking()
-                .Include(u => u.Role)
-                .Where(u => u.RoleId == 2 && u.IsActive)
-                .OrderBy(u => u.Name)
-                .ToListAsync();
-        }
+{
+    return await _context.Users
+        .AsNoTracking()
+        .Include(u => u.Role)
+        .Where(u =>
+            (u.RoleId == 1 || u.RoleId == 2) &&
+            u.IsActive)
+        .OrderBy(u => u.RoleId)
+        .ThenBy(u => u.Name)
+        .ToListAsync();
+}
 
+        public async Task<User?> GetUserByIdAsync(int userId)
+{
+    return await _context.Users
+        .Include(u => u.Role)
+        .Include(u => u.Department)
+        .FirstOrDefaultAsync(u => u.UserId == userId);
+}
         public async Task<IEnumerable<User>> GetEmployeesAsync()
         {
             return await _context.Users
@@ -102,7 +112,6 @@ namespace server.Repositories
 
         public async Task<User> CreateAsync(User user)
         {
-            
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 

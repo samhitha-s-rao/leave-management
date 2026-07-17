@@ -101,7 +101,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     };
 });
 builder.Services.AddScoped<IHolidayRepository, HolidayRepository>();
-
 builder.Services.AddScoped<IHolidayService, HolidayService>();
 builder.Services.AddAuthorization();
 
@@ -118,7 +117,8 @@ builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
 builder.Services.AddScoped<ILeaveService, LeaveService>();
 builder.Services.AddScoped<ILeaveTypeRepository, LeaveTypeRepository>();
 builder.Services.AddScoped<ILeaveTypeService, LeaveTypeService>();
-builder.Services.AddScoped<JwtTokenGenerator>();
+
+
 builder.Services.AddScoped<
     ILeaveBalanceRepository,
     LeaveBalanceRepository>();
@@ -126,6 +126,10 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     ILeaveBalanceService,
     LeaveBalanceService>();
+builder.Services.AddScoped<INotificationRepository,NotificationRepository>();
+builder.Services.AddScoped<INotificationService,NotificationService>();
+
+builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReact",

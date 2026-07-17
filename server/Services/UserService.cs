@@ -5,6 +5,7 @@ using server.Helpers;
 using server.Models;
 using server.Repositories.Interfaces;
 using server.Services.Interfaces;
+using server.DTOs;
 
 namespace server.Services
 {
@@ -77,6 +78,36 @@ namespace server.Services
                 ?? throw new Exception("Failed to retrieve created user.");
 
             return _mapper.Map<UserDto>(user);
+        }
+        public async Task<UserProfileDto?> GetProfile(int userId)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+
+            if (user == null)
+                return null;
+
+            return new UserProfileDto
+            {
+                UserId = user.UserId,
+                Name = user.Name,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
+                Address = user.Address,
+                Role = user.Role?.RoleName ?? string.Empty,
+                Department = user.Department?.DepartmentName ?? string.Empty
+            };
+        }
+        public async Task UpdateProfile(int userId, UpdateProfileDto dto)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+                throw new Exception("User not found.");
+
+            user.PhoneNumber = dto.PhoneNumber;
+            user.Address = dto.Address;
+
+            await _userRepository.UpdateAsync(user);
         }
 
         public async Task<UserDto> UpdateAsync(int id, UpdateUserDto dto)

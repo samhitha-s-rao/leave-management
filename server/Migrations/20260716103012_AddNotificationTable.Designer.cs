@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using server.Data;
@@ -11,9 +12,11 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260716103012_AddNotificationTable")]
+    partial class AddNotificationTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,6 +42,15 @@ namespace server.Migrations
                     b.Property<TimeOnly?>("CheckOutTime")
                         .HasColumnType("time without time zone");
 
+                    b.Property<double>("OvertimeHours")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -242,7 +254,8 @@ namespace server.Migrations
                             LeaveTypeName = "Earned Leave"
                         });
                 });
-             modelBuilder.Entity("server.Models.Notification", b =>
+
+            modelBuilder.Entity("server.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
                         .ValueGeneratedOnAdd()
@@ -279,7 +292,6 @@ namespace server.Migrations
 
                     b.ToTable("Notifications");
                 });
-
 
             modelBuilder.Entity("server.Models.Role", b =>
                 {
@@ -478,6 +490,17 @@ namespace server.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("server.Models.Notification", b =>
+                {
+                    b.HasOne("server.Models.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("server.Models.User", b =>
                 {
                     b.HasOne("server.Models.Department", "Department")
@@ -530,6 +553,8 @@ namespace server.Migrations
                     b.Navigation("LeaveBalances");
 
                     b.Navigation("LeaveRequests");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

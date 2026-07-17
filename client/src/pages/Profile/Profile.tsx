@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -21,26 +21,67 @@ import {
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 
+import {
+  getProfile,
+  updateProfile,
+} from "../../services/profileService";
+
+import type { UserProfile } from "../../types";
+
 const Profile = () => {
   const navigate = useNavigate();
 
-  const storedUser =
-    JSON.parse(localStorage.getItem("user") || "null") ||
-    JSON.parse(sessionStorage.getItem("user") || "null");
+  const [profile, setProfile] =
+    useState<UserProfile | null>(null);
 
-  const [user, setUser] = useState(storedUser);
-  const [phone, setPhone] = useState(storedUser?.phone || "");
-  const [profileImage, setProfileImage] = useState(
-    storedUser?.profileImage || ""
-  );
-  const [address, setAddress] = useState(storedUser?.address || "");
+  const [loading, setLoading] =
+    useState(true);
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [phone, setPhone] =
+    useState("");
 
-  if (!user) {
+  const [address, setAddress] =
+    useState("");
+
+  const [profileImage, setProfileImage] =
+    useState("");
+
+  const [isEditing, setIsEditing] =
+    useState(false);
+
+  useEffect(() => {
+  const fetchProfile = async () => {
+    try {
+      console.log("Calling getProfile...");
+
+      const data = await getProfile();
+
+      console.log("Received:", data);
+
+      setProfile(data);
+
+      console.log("setProfile completed");
+
+      setPhone(data.phone ?? "");
+      setAddress(data.address ?? "");
+    } catch (err) {
+      console.error("ERROR:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProfile();
+}, []);
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (!profile) {
     return (
       <Typography variant="h6">
-        User not found.
+        Unable to load profile.
       </Typography>
     );
   }
@@ -55,69 +96,83 @@ const Profile = () => {
     const reader = new FileReader();
 
     reader.onloadend = () => {
-      setProfileImage(reader.result as string);
+      setProfileImage(
+        reader.result as string
+      );
     };
 
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
-    const updatedUser = {
-      ...user,
-      phone,
-      address,
-      profileImage,
-    };
+  const handleSave = async () => {
+    try {
+      await updateProfile({
+        phoneNumber: phone,
+        address,
+      });
 
-    if (localStorage.getItem("user")) {
-      localStorage.setItem(
-        "user",
-        JSON.stringify(updatedUser)
+      setProfile({
+        ...profile,
+        phone,
+        address,
+      });
+
+      setIsEditing(false);
+
+      alert(
+        "Profile updated successfully!"
       );
-    } else {
-      sessionStorage.setItem(
-        "user",
-        JSON.stringify(updatedUser)
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        "Failed to update profile."
       );
     }
-
-    setUser(updatedUser);
-    setIsEditing(false);
-
-    alert("Profile updated successfully!");
   };
 
- const handleCancel = () => {
-  setPhone(user.phone || "");
-  setAddress(user.address || "");
-  setProfileImage(user.profileImage || "");
-  setIsEditing(false);
-};
+  const handleCancel = () => {
+    setPhone(profile.phone ?? "");
+    setAddress(profile.address ?? "");
+    setProfileImage("");
+
+    setIsEditing(false);
+  };
 
   return (
     <Box className="profile-page">
       <Button
         startIcon={<ArrowBack />}
         variant="outlined"
-        onClick={() => navigate("/dashboard")}
+        onClick={() =>
+          navigate("/dashboard")
+        }
         sx={{ mb: 2 }}
       >
-        
+        Back
       </Button>
 
       <Typography className="profile-title">
         My Profile
       </Typography>
 
-      <Paper elevation={3} className="profile-card">
+      <Paper
+        elevation={3}
+        className="profile-card"
+      >
         <Grid
-  container
-  spacing={4}
-  alignItems="flex-start"
->
+          container
+          spacing={4}
+          alignItems="flex-start"
+        >
           {/* Left Section */}
 
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 4,
+            }}
+          >
             <Box className="profile-left">
               <Avatar
                 src={profileImage}
@@ -144,7 +199,9 @@ const Profile = () => {
                     hidden
                     type="file"
                     accept="image/*"
-                    onChange={handleImageUpload}
+                    onChange={
+                      handleImageUpload
+                    }
                   />
                 </Button>
               )}
@@ -153,11 +210,11 @@ const Profile = () => {
                 variant="h5"
                 className="profile-name"
               >
-                {user.name}
+                {profile.name}
               </Typography>
 
               <Chip
-                label={user.role}
+                label={profile.role}
                 className="profile-role"
                 sx={{
                   bgcolor: "#1A3E7A",
@@ -167,10 +224,14 @@ const Profile = () => {
               />
             </Box>
           </Grid>
+                    {/* Right Section */}
 
-          {/* Right Section */}
-
-          <Grid size={{ xs: 12, md: 8 }}>
+          <Grid
+            size={{
+              xs: 12,
+              md: 8,
+            }}
+          >
             <Typography className="profile-section-title">
               Personal Information
             </Typography>
@@ -178,18 +239,18 @@ const Profile = () => {
             <Divider />
 
             <Box className="info-row">
-  <Email className="icon" />
+              <Email className="icon" />
 
-  <Box flex={1}>
-    <Typography className="label">
-      Email
-    </Typography>
+              <Box flex={1}>
+                <Typography className="label">
+                  Email
+                </Typography>
 
-    <Typography className="value">
-      {user.email}
-    </Typography>
-  </Box>
-</Box>
+                <Typography className="value">
+                  {profile.email}
+                </Typography>
+              </Box>
+            </Box>
 
             <Box className="info-row">
               <Phone className="icon" />
@@ -215,6 +276,7 @@ const Profile = () => {
                 )}
               </Box>
             </Box>
+
             <Box className="info-row">
               <Business className="icon" />
 
@@ -249,20 +311,21 @@ const Profile = () => {
                 </Typography>
 
                 <Typography className="value">
-                  {user.role}
+                  {profile.role}
                 </Typography>
               </Box>
             </Box>
-                        <Box className="info-row">
+
+            <Box className="info-row">
               <AccountCircle className="icon" />
 
               <Box flex={1}>
                 <Typography className="label">
-                  User ID
+                  Employee ID
                 </Typography>
 
                 <Typography className="value">
-                  EMP{String(user.id).padStart(3, "0")}
+                  {profile.employeeId}
                 </Typography>
               </Box>
             </Box>
@@ -276,11 +339,7 @@ const Profile = () => {
                 </Typography>
 
                 <Typography className="value">
-                  {user.role === "Admin"
-                    ? "Administration"
-                    : user.role === "Manager"
-                    ? "Management"
-                    : "Engineering"}
+                  {profile.department}
                 </Typography>
               </Box>
             </Box>
@@ -314,22 +373,24 @@ const Profile = () => {
                   </Button>
                 </>
               ) : (
-                <Button
-                  variant="contained"
-                  onClick={() => setIsEditing(true)}
-                  sx={{
-                    bgcolor: "#1A3E7A",
-                    "&:hover": {
-                      bgcolor: "#14325f",
-                    },
-                  }}
-                >
-                  Update Profile
-                </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() =>
+                      setIsEditing(true)
+                    }
+                    sx={{
+                      bgcolor: "#1A3E7A",
+                      "&:hover": {
+                        bgcolor: "#14325f",
+                      },
+                    }}
+                  >
+                    Update Profile
+                  </Button>
               )}
             </Box>
           </Grid>
-        </Grid>
+            </Grid>
       </Paper>
     </Box>
   );

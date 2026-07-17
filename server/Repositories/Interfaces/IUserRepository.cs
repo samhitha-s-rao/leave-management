@@ -15,7 +15,7 @@ namespace server.Repositories.Interfaces
         Task<IEnumerable<User>> GetManagersAsync();
 
         Task<IEnumerable<User>> GetEmployeesAsync();
-
+        Task<User?> GetUserByIdAsync(int userId);
         Task<User> CreateAsync(User user);
 
         Task<User> UpdateAsync(User user);

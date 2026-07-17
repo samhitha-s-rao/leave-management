@@ -67,5 +67,6 @@ public string Designation { get; set; } = string.Empty;
         public ICollection<LeaveBalance> LeaveBalances { get; set; } = new List<LeaveBalance>();
 
         public ICollection<Attendance> Attendances { get; set; } = new List<Attendance>();
+        public ICollection<Notification> Notifications { get; set; }= new List<Notification>();
     }
 }

@@ -1,51 +1,124 @@
-import { Paper, Typography, Button } from "@mui/material";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+    Card,
+    CardContent,
+    Typography,
+    Stack,
+    Chip,
+    Button
+} from "@mui/material";
 
-const Notification = () => {
-  const navigate = useNavigate();
+import {
+    getNotifications,
+    markAsRead,
+    markAllAsRead,
+} from "../../services/notificationService";
 
-  return (
-    <Paper
-      elevation={2}
-      sx={{
-        padding: "35px",
-        borderRadius: "12px",
-        boxShadow: "0 2px 10px rgba(0,0,0,.08)",
-      }}
-    >
-      <Button
-        startIcon={<ArrowBackIcon />}
-        variant="outlined"
-        sx={{ mb: 2 }}
-        onClick={() => navigate("/dashboard")}
-      >
-        
-      </Button>
+import type { Notification } from "../../types/index";
 
-      <Typography
-        variant="h4"
-        sx={{
-          color: "#1A3E7A",
-          fontWeight: "bold",
-          mb: 1,
-        }}
-      >
-        Notifications
-      </Typography>
+const Notifications = () => {
 
-      <Typography
-        variant="body2"
-        sx={{
-          color: "#666",
-          mt: 3,
-          fontSize: "15px",
-        }}
-      >
-        All your notifications appear here.
-      </Typography>
-    </Paper>
-  );
+    const [notifications, setNotifications] = useState<Notification[]>([]);
+
+    const loadNotifications = async () => {
+        const data = await getNotifications();
+        setNotifications(data);
+    };
+
+   useEffect(() => {
+    const fetchNotifications = async () => {
+        try {
+            const data = await getNotifications();
+            setNotifications(data);
+        } catch (error) {
+            console.error("Failed to load notifications:", error);
+        }
+    };
+
+    fetchNotifications();
+}, []);
+
+    const handleRead = async (id: number) => {
+        await markAsRead(id);
+        loadNotifications();
+    };
+
+    const handleReadAll = async () => {
+        await markAllAsRead();
+        loadNotifications();
+    };
+
+    return (
+        <Stack spacing={2}>
+
+            <Button
+                variant="contained"
+                onClick={handleReadAll}
+            >
+                Mark All As Read
+            </Button>
+
+            {notifications.map((notification) => (
+
+                <Card
+                    key={notification.notificationId}
+                >
+                    <CardContent>
+
+                        <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                        >
+
+                            <Typography
+                                variant="h6"
+                            >
+                                {notification.title}
+                            </Typography>
+
+                            {!notification.isRead && (
+                                <Chip
+                                    color="error"
+                                    label="New"
+                                />
+                            )}
+
+                        </Stack>
+
+                        <Typography
+                            sx={{ mt: 1 }}
+                        >
+                            {notification.message}
+                        </Typography>
+
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                        >
+                            {new Date(notification.createdAt)
+                                .toLocaleString()}
+                        </Typography>
+
+                        {!notification.isRead && (
+
+                            <Button
+                                sx={{ mt: 2 }}
+                                size="small"
+                                onClick={() =>
+                                    handleRead(notification.notificationId)}
+                            >
+                                Mark as Read
+                            </Button>
+
+                        )}
+
+                    </CardContent>
+                </Card>
+
+            ))}
+
+        </Stack>
+    );
 };
 
-export default Notification;
+export default Notifications;

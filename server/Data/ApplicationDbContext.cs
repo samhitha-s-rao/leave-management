@@ -25,6 +25,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Attendance> Attendances { get; set; }
 
+    public DbSet<Notification> Notifications { get; set; }
     public DbSet<Holiday> Holidays { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -34,6 +35,13 @@ public class ApplicationDbContext : DbContext
         ConfigureRelationships(modelBuilder);
         ConfigureConstraints(modelBuilder);
         SeedData(modelBuilder);
+
+
+        modelBuilder.Entity<Notification>()
+        .HasOne(n => n.User)
+        .WithMany(u => u.Notifications)
+        .HasForeignKey(n => n.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
     }
     
 

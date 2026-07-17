@@ -72,6 +72,8 @@ export interface Role {
 export interface Manager {
   userId: number;
   name: string;
+  roleName: string;
+
 }
 
 
@@ -142,4 +144,21 @@ export interface EmployeeActionMenuProps {
   onEdit: () => void;
   onToggleStatus: () => void;
 }
-
+export interface Notification {
+    notificationId: number;
+    title: string;
+    message: string;
+    isRead: boolean;
+    createdAt: string;
+    link?: string;
+}
+export interface UserProfile {
+  userId: number;
+  employeeId: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  address: string | null;
+  role: string;
+  department: string;
+}

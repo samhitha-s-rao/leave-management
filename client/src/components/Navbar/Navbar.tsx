@@ -11,11 +11,47 @@ import {
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useNavigate } from "react-router-dom";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { useEffect, useState } from "react";
+import { getUnreadCount } from "../../services/notificationService"; // Adjust path if needed
 const Navbar = () => {
   const navigate = useNavigate();
 
-  const unreadNotifications = 3;
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+useEffect(() => {
+  let isMounted = true;
 
+  (async () => {
+    try {
+      const count = await getUnreadCount();
+
+      if (isMounted) {
+        setUnreadNotifications(count);
+      }
+    } catch (error) {
+      console.error("Failed to load unread count", error);
+    }
+  })();
+
+  return () => {
+    isMounted = false;
+  };
+}, []);
+useEffect(() => {
+  const fetchUnreadCount = async () => {
+    try {
+      const count = await getUnreadCount();
+      setUnreadNotifications(count);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  fetchUnreadCount();
+
+  const interval = setInterval(fetchUnreadCount, 5000);
+
+  return () => clearInterval(interval);
+}, []);
   const user =
     JSON.parse(localStorage.getItem("user") || "null") ||
     JSON.parse(sessionStorage.getItem("user") || "null");
@@ -56,9 +92,10 @@ const Navbar = () => {
             className="navbar-icon"
           >
             <Badge
-              badgeContent={unreadNotifications}
-              color="error"
-            >
+    badgeContent={unreadNotifications}
+    color="error"
+    invisible={unreadNotifications === 0}
+>
               <NotificationsIcon />
             </Badge>
           </IconButton>

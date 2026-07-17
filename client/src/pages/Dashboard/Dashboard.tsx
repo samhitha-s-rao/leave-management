@@ -336,22 +336,45 @@ const handleCreateEmployee = async () => {
 </FormControl>
 
 <FormControl fullWidth>
-  <InputLabel>Manager</InputLabel>
+  <InputLabel>Reporting Manager</InputLabel>
 
   <Select
     name="managerId"
     value={employeeData.managerId}
     onChange={handleInputChange}
-    label="Manager"
+    label="Reporting Manager"
   >
-    {managers.map((manager) => (
-      <MenuItem
-        key={manager.userId}
-        value={manager.userId}
-      >
-        {manager.name}
-      </MenuItem>
-    ))}
+    {managers.length > 0 ? (
+      managers.map((manager) => (
+        <MenuItem
+          key={manager.userId}
+          value={manager.userId}
+        >
+          <span
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+              alignItems: "center",
+            }}
+          >
+            <span>{manager.name}</span>
+
+            <span
+              style={{
+                color: "#757575",
+                fontSize: "0.8rem",
+                fontStyle: "italic",
+              }}
+            >
+              ({manager.roleName})
+            </span>
+          </span>
+        </MenuItem>
+      ))
+    ) : (
+      <MenuItem disabled>No Reporting Managers Found</MenuItem>
+    )}
   </Select>
 </FormControl>
         </DialogContent>

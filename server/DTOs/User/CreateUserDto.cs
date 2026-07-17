@@ -42,5 +42,6 @@ namespace server.DTOs.User
         public int RoleId { get; set; }
 
         public int? ManagerId { get; set; }
+
     }
 }
