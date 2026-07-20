@@ -73,16 +73,57 @@ namespace server.Controllers
 
         // PUT: api/Users/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, UpdateUserDto dto)
+[Authorize(Roles = "Admin")]
+public async Task<IActionResult> Update(
+    int id,
+    [FromBody] UpdateEmployeeDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+    try
+    {
+        await _userService.UpdateEmployeeAsync(id, dto);
+
+        return Ok(new
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            message = "Employee updated successfully."
+        });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new
+        {
+            message = ex.Message
+        });
+    }
+}
+        [HttpPatch("{id}/status")]
+public async Task<IActionResult> UpdateEmployeeStatus(
+    int id,
+    [FromBody] UpdateEmployeeStatusDto dto)
+{
+    try
+    {
+        await _userService.UpdateEmployeeStatusAsync(
+            id,
+            dto.IsActive);
 
-            var user = await _userService.UpdateAsync(id, dto);
-
-            return Ok(user);
-        }
+        return Ok(new
+        {
+            message = dto.IsActive
+                ? "Employee activated successfully."
+                : "Employee deactivated successfully."
+        });
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(new
+        {
+            message = ex.Message
+        });
+    }
+}
 
         // DELETE: api/Users/5
         [HttpDelete("{id}")]

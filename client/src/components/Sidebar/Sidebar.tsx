@@ -72,7 +72,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
 {
   text: 'Employee Attendance',
   icon: <FactCheckIcon fontSize="small" />,
-  roles: ['Manager', 'Admin'],
+  roles: ['Admin'],
 },
 {
   text: 'Company Calendar',

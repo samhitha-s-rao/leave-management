@@ -120,6 +120,10 @@ export interface EmployeeLeaveHistory {
 }
 export interface Employee {
   id: number;
+  userId: number;
+  roleId: number;
+  departmentId: number;
+
   name: string;
   email: string;
   role: "Employee" | "Manager" | "Admin";

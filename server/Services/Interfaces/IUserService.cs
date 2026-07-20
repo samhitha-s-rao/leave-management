@@ -13,6 +13,9 @@ namespace server.Services.Interfaces
 
         Task<IEnumerable<ManagerDto>> GetAdminsAsync();
 
+        Task UpdateEmployeeAsync(int userId, UpdateEmployeeDto dto);
+
+        Task UpdateEmployeeStatusAsync(int userId, bool isActive);
         Task<UserDto> CreateAsync(CreateUserDto dto);
 
         Task<UserProfileDto?> GetProfile(int userId);

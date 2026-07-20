@@ -14,7 +14,10 @@ namespace server.Repositories
         {
             _context = context;
         }
-
+        public async Task SaveChangesAsync()
+    {
+        await _context.SaveChangesAsync();
+    }
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users

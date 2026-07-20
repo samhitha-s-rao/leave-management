@@ -1,32 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
   Chip,
 } from "@mui/material";
 
-import { mockUsers } from "../../mock/users";
 import AppTable from "../../components/common/AppTable";
 
-import EmployeeActionMenu from "../../components/employess/EmployeeActionMenu";
-import EmployeeEditDialog from "../../components/employess/EmployeeEditDialog";
+import EmployeeActionMenu from "../../components/Employees/EmployeeActionMenu";
+import EmployeeEditDialog from "../../components/Employees/EmployeeEditDialog";
+
+import {
+  getEmployees,
+  updateEmployee,
+  updateEmployeeStatus,
+  type EmployeeResponse,
+} from "../../services/profileService";
+
 import type { Employee } from "../../types";
 
 const EmployeeList = () => {
-
-  const [employees, setEmployees] = useState<Employee[]>(
-    mockUsers
-      .filter((user) => user.role !== "Admin")
-      .map((user) => ({
-        ...user,
-        address: user.address ?? "",
-        profileImage: user.profileImage ?? "",
-        active:
-          user.active !== undefined
-            ? user.active
-            : true,
-      }))
-  );
+  const [employees, setEmployees] = useState<Employee[]>([]);
 
   const [selectedEmployee, setSelectedEmployee] =
     useState<Employee | null>(null);
@@ -34,41 +28,127 @@ const EmployeeList = () => {
   const [openEditDialog, setOpenEditDialog] =
     useState(false);
 
-  const handleEdit = (
-    employee: Employee
-  ) => {
-    setSelectedEmployee(employee);
-    setOpenEditDialog(true);
+  const fetchEmployees = async () => {
+    try {
+      const users = await getEmployees();
+
+      const mappedEmployees: Employee[] = users
+  .filter(
+    (user: EmployeeResponse) =>
+      user.roleName !== "Admin"
+  )
+  .map(
+    (user: EmployeeResponse) => ({
+      id: user.userId,
+      userId: user.userId,
+
+      name: user.name,
+      email: user.email,
+
+      role: user.roleName as
+        | "Employee"
+        | "Manager"
+        | "Admin",
+
+      roleId: user.roleId,
+
+      department:
+        user.departmentName,
+
+      departmentId:
+        user.departmentId,
+
+      designation:
+        user.designation ?? "",
+
+      phone:
+        user.phoneNumber ?? "",
+
+      address:
+        user.address ?? "",
+
+      dateOfJoining:
+        user.dateOfJoining,
+
+      active: user.isActive,
+
+      profileImage: "",
+    })
+  );
+      setEmployees(mappedEmployees);
+    } catch (error) {
+      console.error(
+        "Failed to fetch employees",
+        error
+      );
+    }
   };
 
-  const handleSave = (
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
+ const handleEdit = (employee: Employee) => {
+  console.log("Opening dialog");
+
+  setSelectedEmployee(employee);
+  setOpenEditDialog(true);
+
+  alert("Edit clicked");
+};
+
+  const handleSave = async (
     updatedEmployee: Employee
   ) => {
-    setEmployees((prev) =>
-      prev.map((emp) =>
-        emp.id === updatedEmployee.id
-          ? updatedEmployee
-          : emp
-      )
-    );
+    try {
+      await updateEmployee(
+        updatedEmployee.userId,
+        {
+          name: updatedEmployee.name,
+          email: updatedEmployee.email,
+          phone: updatedEmployee.phone,
+          address: updatedEmployee.address,
+          departmentId:
+            updatedEmployee.departmentId,
+          roleId:
+            updatedEmployee.roleId,
+          designation:
+            updatedEmployee.designation,
+          dateOfJoining:
+            updatedEmployee.dateOfJoining,
+        }
+      );
 
-    setOpenEditDialog(false);
+      await fetchEmployees();
+
+      setOpenEditDialog(false);
+      setSelectedEmployee(null);
+    } catch (error) {
+      console.error(
+        "Update failed",
+        error
+      );
+    }
   };
 
-  const handleToggleStatus = (
-    id: number
-  ) => {
-    setEmployees((prev) =>
-      prev.map((emp) =>
-        emp.id === id
-          ? {
-              ...emp,
-              active: !emp.active,
-            }
-          : emp
-      )
+ const handleToggleStatus = async (
+  employee: Employee
+) => {
+  console.log("Status Employee:", employee);
+
+  try {
+    await updateEmployeeStatus(
+      employee.userId,
+      !employee.active
     );
-  };
+
+    console.log("Status Updated");
+
+    await fetchEmployees();
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   const columns = [
     {
@@ -150,21 +230,22 @@ const EmployeeList = () => {
       align: "center" as const,
 
       render: (row: Employee) => (
-        <EmployeeActionMenu
-          active={row.active}
-          onEdit={() =>
-            handleEdit(row)
-          }
-          onToggleStatus={() =>
-            handleToggleStatus(
-              row.id
-            )
-          }
-        />
-      ),
+  <EmployeeActionMenu
+    active={row.active}
+    onEdit={() => {
+      console.log("Edit clicked", row);
+      handleEdit(row);
+    }}
+    onToggleStatus={() => {
+      console.log("Toggle clicked", row);
+      handleToggleStatus(row);
+    }}
+  />
+),
     },
   ];
-    return (
+
+  return (
     <Box p={4}>
       <Typography
         variant="h4"

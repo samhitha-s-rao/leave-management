@@ -36,6 +36,41 @@ namespace server.Services
 
             return _mapper.Map<IEnumerable<ManagerDto>>(managers);
         }
+        public async Task UpdateEmployeeAsync(int userId, UpdateEmployeeDto dto)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new Exception("Employee not found.");
+            }
+
+            user.Name = dto.Name;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.Phone;
+            user.Address = dto.Address;
+            user.DepartmentId = dto.DepartmentId;
+            user.RoleId = dto.RoleId;
+            user.Designation = dto.Designation;
+            user.DateOfJoining = DateOnly.FromDateTime(dto.DateOfJoining);
+
+            await _userRepository.UpdateAsync(user);
+            await _userRepository.SaveChangesAsync();
+        }
+        public async Task UpdateEmployeeStatusAsync(int userId, bool isActive)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new Exception("Employee not found.");
+            }
+
+            user.IsActive = isActive;
+
+            await _userRepository.UpdateAsync(user);
+            await _userRepository.SaveChangesAsync();
+        }
 
         public async Task<IEnumerable<ManagerDto>> GetAdminsAsync()
         {
