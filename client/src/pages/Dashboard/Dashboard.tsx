@@ -1,4 +1,4 @@
-
+import { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -11,18 +11,17 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import type { Department,Role,Manager } from "../../types/index";
-import "./Dashboard.css";
-import Cards from "../../components/Card/Card";
 import type { SelectChangeEvent } from "@mui/material";
-import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+
+import type { Department, Role, Manager } from "../../types/index";
+import Cards from "../../components/Card/Card";
 import { createEmployee } from "../../api/employeeApi";
 import { getDepartments } from "../../api/departmentApi";
 import { getRoles } from "../../api/roleApi";
-import { getManagers } from "../../api/managerApi";
+import { getManagers, getReportingManagers } from "../../api/managerApi";
 import { checkIn, checkOut } from "../../api/attendanceApi";
-import { toast } from "react-toastify";
-
+import "./Dashboard.css";
 
 const Dashboard = () => {
   const user =
@@ -35,80 +34,115 @@ const Dashboard = () => {
 
   const [openEmployeeModal, setOpenEmployeeModal] = useState(false);
 
-const [employeeData, setEmployeeData] = useState({
-  name: "",
-  email: "",
-  password: "",
-  phoneNumber: "",
-  address: "",
-  designation: "",
-  dateOfJoining: "",
-  departmentId: "",
-  roleId: "",
-  managerId: "",
-});
-const [departments, setDepartments] = useState<Department[]>([]);
-const [roles, setRoles] = useState<Role[]>([]);
-const [managers, setManagers] = useState<Manager[]>([]);
+  const [employeeData, setEmployeeData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    phoneNumber: "",
+    address: "",
+    designation: "",
+    dateOfJoining: "",
+    departmentId: "",
+    roleId: "",
+    managerId: "",
+  });
+
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [managers, setManagers] = useState<Manager[]>([]);
+
+  // Fetch initial dropdown data (Departments & Roles)
+  useEffect(() => {
+    const loadDropdowns = async () => {
+      try {
+        const [departmentData, roleData] = await Promise.all([
+          getDepartments(),
+          getRoles(),
+        ]);
+
+        setDepartments(departmentData);
+        setRoles(roleData);
+      } catch (error) {
+        console.error("Dropdown API Error:", error);
+      }
+    };
+
+    loadDropdowns();
+  }, []);
+
+  // Dynamically fetch reporting managers based on selected Role
+  // Dynamically fetch reporting managers based on selected Role
+// Dynamically fetch reporting managers based on selected Role
 useEffect(() => {
-  const loadDropdowns = async () => {
+  const fetchReportingManagers = async () => {
     try {
-      const [departmentData, roleData, managerData] = await Promise.all([
-        getDepartments(),
-        getRoles(),
-        getManagers(),
-      ]);
+      // Find selected role object from state
+      const selectedRole = roles.find(
+        (r) => Number(r.roleId) === Number(employeeData.roleId)
+      );
 
-      console.log("Departments:", departmentData);
-      console.log("Roles:", roleData);
-      console.log("Managers:", managerData);
+      const isManagerRole = selectedRole?.roleName?.toLowerCase() === "manager";
 
-      setDepartments(departmentData);
-      setRoles(roleData);
-      setManagers(managerData);
+      let data: Manager[] = [];
+
+      if (isManagerRole) {
+        // 1. Fetch ALL users/managers (since getReportingManagers skips Admins)
+        const allManagers = await getManagers();
+
+        // 2. Filter specifically for Admin users
+        data = allManagers.filter((m: any) => {
+          const userRole = (m.roleName || m.role || "").toLowerCase();
+          // Checks for "admin" OR falls back to user.role if logged-in user is Admin
+          return userRole === "admin" || m.name === user?.name;
+        });
+      } else if (employeeData.roleId) {
+        // For standard employees, fetch valid reporting managers for that role ID
+        data = await getReportingManagers(Number(employeeData.roleId));
+      } else {
+        // Default fallback if no role is selected yet
+        data = await getManagers();
+      }
+
+      setManagers(data);
+
+      // Reset manager selection if current selection is invalid in the new list
+      if (
+        employeeData.managerId &&
+        !data.some((m: Manager) => m.userId === Number(employeeData.managerId))
+      ) {
+        setEmployeeData((prev) => ({ ...prev, managerId: "" }));
+      }
     } catch (error) {
-      console.error("Dropdown API Error:", error);
+      console.error("Error fetching reporting managers:", error);
     }
   };
 
-  loadDropdowns();
-}, []);
-
+  fetchReportingManagers();
+}, [employeeData.roleId, roles, user?.name]);
 
   if (!user) return null;
 
   const handleCheckIn = async () => {
-  try {
-    const message = await checkIn();
-
-    toast.success(message);
-
-    setIsCheckedIn(true);
-
-    localStorage.setItem("isCheckedIn", "true");
-  } catch (error: any) {
-    toast.error(
-      error.response?.data || "Check In Failed"
-    );
-  }
-};
+    try {
+      const message = await checkIn();
+      toast.success(message);
+      setIsCheckedIn(true);
+      localStorage.setItem("isCheckedIn", "true");
+    } catch (error: any) {
+      toast.error(error.response?.data || "Check In Failed");
+    }
+  };
 
   const handleCheckOut = async () => {
-  try {
-    const message = await checkOut();
-
-    toast.success(message);
-
-    setIsCheckedIn(false);
-
-    localStorage.setItem("isCheckedIn", "false");
-  } catch (error: any) {
-    toast.error(
-      error.response?.data || "Check Out Failed"
-    );
-  }
-};
-
+    try {
+      const message = await checkOut();
+      toast.success(message);
+      setIsCheckedIn(false);
+      localStorage.setItem("isCheckedIn", "false");
+    } catch (error: any) {
+      toast.error(error.response?.data || "Check Out Failed");
+    }
+  };
 
   const handleOpenEmployeeModal = () => {
     setOpenEmployeeModal(true);
@@ -118,54 +152,55 @@ useEffect(() => {
     setOpenEmployeeModal(false);
   };
 
-const handleInputChange = (
-  e:
-    | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    | SelectChangeEvent
-) => {
-  const { name, value } = e.target;
+  const handleInputChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | SelectChangeEvent
+  ) => {
+    const { name, value } = e.target;
 
-  setEmployeeData((prev) => ({
-    ...prev,
-    [name]: value,
-  }));
-};
-const handleCreateEmployee = async () => {
-  try {
-    await createEmployee({
-      name: employeeData.name,
-      email: employeeData.email,
-      password: employeeData.password,
-      phoneNumber: employeeData.phoneNumber,
-      address: employeeData.address,
-      designation: employeeData.designation,
-      dateOfJoining: employeeData.dateOfJoining,
-      departmentId: Number(employeeData.departmentId),
-      roleId: Number(employeeData.roleId),
-      managerId: Number(employeeData.managerId),
-    });
+    setEmployeeData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-    alert("Employee Created Successfully");
+  const handleCreateEmployee = async () => {
+    try {
+      await createEmployee({
+        name: employeeData.name,
+        email: employeeData.email,
+        password: employeeData.password,
+        phoneNumber: employeeData.phoneNumber,
+        address: employeeData.address,
+        designation: employeeData.designation,
+        dateOfJoining: employeeData.dateOfJoining,
+        departmentId: Number(employeeData.departmentId),
+        roleId: Number(employeeData.roleId),
+        managerId: Number(employeeData.managerId),
+      });
 
-    setEmployeeData({
-      name: "",
-      email: "",
-      password: "",
-      phoneNumber: "",
-      address: "",
-      designation: "",
-      dateOfJoining: "",
-      departmentId: "",
-      roleId: "",
-      managerId: "",
-    });
+      toast.success("Employee Created Successfully");
 
-    setOpenEmployeeModal(false);
-  } catch (error) {
-    console.error(error);
-    alert("Failed to create employee");
-  }
-};
+      setEmployeeData({
+        name: "",
+        email: "",
+        password: "",
+        phoneNumber: "",
+        address: "",
+        designation: "",
+        dateOfJoining: "",
+        departmentId: "",
+        roleId: "",
+        managerId: "",
+      });
+
+      setOpenEmployeeModal(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create employee");
+    }
+  };
 
   return (
     <div className="dashboard">
@@ -195,36 +230,36 @@ const handleCreateEmployee = async () => {
               )}
 
               <Button
-  variant="contained"
-  className="checkin-btn"
-  onClick={handleCheckIn}
-  disabled={isCheckedIn}
-  sx={{
-    "&.Mui-disabled": {
-      backgroundColor: "#1565c0",  // Same green color
-      color: "#fff",
-      opacity: 1,
-    },
-  }}
->
-  Check In
-</Button>
+                variant="contained"
+                className="checkin-btn"
+                onClick={handleCheckIn}
+                disabled={isCheckedIn}
+                sx={{
+                  "&.Mui-disabled": {
+                    backgroundColor: "#1565c0",
+                    color: "#fff",
+                    opacity: 1,
+                  },
+                }}
+              >
+                Check In
+              </Button>
 
-<Button
-  variant="contained"
-  className="checkout-btn"
-  onClick={handleCheckOut}
-  disabled={!isCheckedIn}
-  sx={{
-    "&.Mui-disabled": {
-      backgroundColor: "#1565c0", // Same blue color
-      color: "#fff",
-      opacity: 1,
-    },
-  }}
->
-  Check Out
-</Button>
+              <Button
+                variant="contained"
+                className="checkout-btn"
+                onClick={handleCheckOut}
+                disabled={!isCheckedIn}
+                sx={{
+                  "&.Mui-disabled": {
+                    backgroundColor: "#1565c0",
+                    color: "#fff",
+                    opacity: 1,
+                  },
+                }}
+              >
+                Check Out
+              </Button>
             </div>
           </div>
 
@@ -266,13 +301,13 @@ const handleCreateEmployee = async () => {
             fullWidth
           />
 
-    <TextField
-  label="Phone Number"
-  name="phoneNumber"
-  value={employeeData.phoneNumber}
-  onChange={handleInputChange}
-  fullWidth
-/>
+          <TextField
+            label="Phone Number"
+            name="phoneNumber"
+            value={employeeData.phoneNumber}
+            onChange={handleInputChange}
+            fullWidth
+          />
 
           <TextField
             label="Address"
@@ -291,25 +326,24 @@ const handleCreateEmployee = async () => {
             fullWidth
           />
 
-<FormControl fullWidth>
-  <InputLabel>Department</InputLabel>
-
-  <Select
-    name="departmentId"
-    value={employeeData.departmentId}
-    onChange={handleInputChange}
-    label="Department"
-  >
-    {departments.map((department) => (
-      <MenuItem
-        key={department.departmentId}
-        value={department.departmentId}
-      >
-        {department.departmentName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
+          <FormControl fullWidth>
+            <InputLabel>Department</InputLabel>
+            <Select
+              name="departmentId"
+              value={employeeData.departmentId}
+              onChange={handleInputChange}
+              label="Department"
+            >
+              {departments.map((department) => (
+                <MenuItem
+                  key={department.departmentId}
+                  value={department.departmentId}
+                >
+                  {department.departmentName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <TextField
             label="Designation"
@@ -330,73 +364,62 @@ const handleCreateEmployee = async () => {
           />
 
           <FormControl fullWidth>
-  <InputLabel>Role</InputLabel>
-
-  <Select
-    name="roleId"
-    value={employeeData.roleId}
-    onChange={handleInputChange}
-    label="Role"
-  >
-    {roles.map((role) => (
-      <MenuItem
-        key={role.roleId}
-        value={role.roleId}
-      >
-        {role.roleName}
-      </MenuItem>
-    ))}
-  </Select>
-</FormControl>
-
-<FormControl fullWidth>
-  <InputLabel>Reporting Manager</InputLabel>
-
-  <Select
-    name="managerId"
-    value={employeeData.managerId}
-    onChange={handleInputChange}
-    label="Reporting Manager"
-  >
-    {managers.length > 0 ? (
-      managers.map((manager) => (
-        <MenuItem
-          key={manager.userId}
-          value={manager.userId}
-        >
-          <span
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              alignItems: "center",
-            }}
-          >
-            <span>{manager.name}</span>
-
-            <span
-              style={{
-                color: "#757575",
-                fontSize: "0.8rem",
-                fontStyle: "italic",
-              }}
+            <InputLabel>Role</InputLabel>
+            <Select
+              name="roleId"
+              value={employeeData.roleId}
+              onChange={handleInputChange}
+              label="Role"
             >
-              ({manager.roleName})
-            </span>
-          </span>
-        </MenuItem>
-      ))
-    ) : (
-      <MenuItem disabled>No Reporting Managers Found</MenuItem>
-    )}
-  </Select>
-</FormControl>
+              {roles.map((role) => (
+                <MenuItem key={role.roleId} value={role.roleId}>
+                  {role.roleName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth>
+            <InputLabel>Reporting Manager</InputLabel>
+            <Select
+              name="managerId"
+              value={employeeData.managerId}
+              onChange={handleInputChange}
+              label="Reporting Manager"
+            >
+              {managers.length > 0 ? (
+                managers.map((manager) => (
+                  <MenuItem key={manager.userId} value={manager.userId}>
+                    <span
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span>{manager.name}</span>
+                      <span
+                        style={{
+                          color: "#757575",
+                          fontSize: "0.8rem",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        ({manager.roleName})
+                      </span>
+                    </span>
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem disabled>No Reporting Managers Found</MenuItem>
+              )}
+            </Select>
+          </FormControl>
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={handleCloseEmployeeModal}>
-            Cancel
-          </Button>
+          <Button onClick={handleCloseEmployeeModal}>Cancel</Button>
 
           <Button
             variant="contained"

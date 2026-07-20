@@ -174,7 +174,7 @@ body {
 }
 
 .MuiDialogActions-root {
-  justify-content: center !important;
+  justify-content: flex-end !important;
   gap: 15px;
   padding-bottom: 25px !important;
 }
