@@ -42,35 +42,49 @@ namespace server.Services
         }
 
         public async Task<string> CheckOutAsync(int userId)
-        {
-            var attendance =
-                await _attendanceRepository
-                    .GetTodayAttendanceAsync(userId);
+{
+    var attendance =
+        await _attendanceRepository
+            .GetTodayAttendanceAsync(userId);
 
-            if (attendance == null)
-            {
-                return "Please check in first.";
-            }
+    if (attendance == null)
+{
+    throw new Exception("Please check in first.");
+}
 
-            if (attendance.CheckOutTime != null)
-            {
-                return "You have already checked out today.";
-            }
+    if (attendance.CheckOutTime != null)
+{
+    throw new Exception("You have already checked out today.");
+}
 
-            attendance.CheckOutTime =
-                TimeOnly.FromDateTime(DateTime.Now);
+    // Minimum 3 hours validation
+    var checkInDateTime = attendance.AttendanceDate.ToDateTime(
+    attendance.CheckInTime!.Value);
 
-            attendance.WorkingHours =
-                (attendance.CheckOutTime.Value.ToTimeSpan() -
-                 attendance.CheckInTime!.Value.ToTimeSpan())
-                .TotalHours;
+var minimumCheckoutTime = checkInDateTime.AddHours(3);
 
-            await _attendanceRepository.CheckOutAsync(attendance);
+if (DateTime.Now < minimumCheckoutTime)
+{
+    var remaining = minimumCheckoutTime - DateTime.Now;
 
-            await _attendanceRepository.SaveChangesAsync();
+    throw new Exception(
+        $"You can check out only after completing 3 hours. Remaining time: {remaining.Hours} hour(s) {remaining.Minutes} minute(s).");
+}
 
-            return "Checked out successfully.";
-        }
+    attendance.CheckOutTime =
+        TimeOnly.FromDateTime(DateTime.Now);
+
+    attendance.WorkingHours =
+        (attendance.CheckOutTime.Value.ToTimeSpan() -
+         attendance.CheckInTime.Value.ToTimeSpan())
+        .TotalHours;
+
+    await _attendanceRepository.CheckOutAsync(attendance);
+
+    await _attendanceRepository.SaveChangesAsync();
+
+    return "Checked out successfully.";
+}
 
         public async Task<IEnumerable<AttendanceDto>>
             GetAttendanceByUserAsync(int userId)

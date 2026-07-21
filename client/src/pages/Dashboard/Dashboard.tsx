@@ -196,13 +196,12 @@ const handleCreateEmployee = async () => {
 
               <Button
   variant="contained"
-  className="checkin-btn"
   onClick={handleCheckIn}
   disabled={isCheckedIn}
   sx={{
     "&.Mui-disabled": {
-      backgroundColor: "#1565c0",  // Same green color
-      color: "#fff",
+      backgroundColor: "#cfd8dc",
+      color: "#616161",
       opacity: 1,
     },
   }}
@@ -212,13 +211,12 @@ const handleCreateEmployee = async () => {
 
 <Button
   variant="contained"
-  className="checkout-btn"
   onClick={handleCheckOut}
   disabled={!isCheckedIn}
   sx={{
     "&.Mui-disabled": {
-      backgroundColor: "#1565c0", // Same blue color
-      color: "#fff",
+      backgroundColor: "#cfd8dc",
+      color: "#616161",
       opacity: 1,
     },
   }}

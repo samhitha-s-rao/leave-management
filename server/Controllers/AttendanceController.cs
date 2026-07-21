@@ -51,7 +51,36 @@ namespace server.Controllers
         [HttpPost("checkin")]
         public async Task<IActionResult> CheckIn()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim == null)
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                int userId = int.Parse(userIdClaim.Value);
+
+                var result =
+                    await _attendanceService.CheckInAsync(userId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Employee Monthly Attendance
+        [HttpGet("monthly")]
+        public async Task<IActionResult> GetMonthlyAttendance(
+            int month,
+            int year)
+        {
+            var userIdClaim =
+                User.FindFirst(ClaimTypes.NameIdentifier);
 
             if (userIdClaim == null)
             {
@@ -61,54 +90,41 @@ namespace server.Controllers
             int userId = int.Parse(userIdClaim.Value);
 
             var result =
-                await _attendanceService.CheckInAsync(userId);
+                await _attendanceService.GetMonthlyAttendanceAsync(
+                    userId,
+                    month,
+                    year);
 
             return Ok(result);
         }
-        [HttpGet("monthly")]
-public async Task<IActionResult> GetMonthlyAttendance(
-    int month,
-    int year)
-{
-    var userIdClaim =
-        User.FindFirst(ClaimTypes.NameIdentifier);
-
-    if (userIdClaim == null)
-    {
-        return Unauthorized();
-    }
-
-    int userId = int.Parse(userIdClaim.Value);
-
-    var result =
-        await _attendanceService.GetMonthlyAttendanceAsync(
-            userId,
-            month,
-            year);
-
-    return Ok(result);
-}
-
 
         // Check Out
         [HttpPost("checkout")]
         public async Task<IActionResult> CheckOut()
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (userIdClaim == null)
+            try
             {
-                return Unauthorized("User ID not found in token.");
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim == null)
+                {
+                    return Unauthorized("User ID not found in token.");
+                }
+
+                int userId = int.Parse(userIdClaim.Value);
+
+                var result =
+                    await _attendanceService.CheckOutAsync(userId);
+
+                return Ok(result);
             }
-
-            int userId = int.Parse(userIdClaim.Value);
-
-            var result =
-                await _attendanceService.CheckOutAsync(userId);
-
-            return Ok(result);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
+        // Admin & Manager - Monthly Attendance of Employee
         [Authorize(Roles = "Admin,Manager")]
         [HttpGet("monthly/{userId}")]
         public async Task<IActionResult> GetMonthlyAttendanceByUser(
@@ -116,10 +132,11 @@ public async Task<IActionResult> GetMonthlyAttendance(
             int month,
             int year)
         {
-            var result = await _attendanceService.GetMonthlyAttendanceAsync(
-                userId,
-                month,
-                year);
+            var result =
+                await _attendanceService.GetMonthlyAttendanceAsync(
+                    userId,
+                    month,
+                    year);
 
             return Ok(result);
         }
