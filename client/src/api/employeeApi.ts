@@ -10,7 +10,7 @@ export interface CreateEmployeeDto {
   dateOfJoining: string;
   departmentId: number;
   roleId: number;
-  managerId: number;
+  managerId: number| null;
 }
 
 export const createEmployee = async (employee: CreateEmployeeDto) => {
