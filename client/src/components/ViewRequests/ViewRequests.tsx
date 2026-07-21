@@ -16,6 +16,9 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 
+import SearchBar from "../../components/SearchBar/SearchBar";
+import AppTable from "../../components/common/AppTable";
+
 import {
   getPendingLeaves,
   leaveDecision,
@@ -23,19 +26,23 @@ import {
 
 import type { LeaveRequest } from "../../types";
 
-import AppTable from "../../components/common/AppTable";
-
 const ViewRequests = () => {
   const navigate = useNavigate();
 
   const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const [selectedRequestId, setSelectedRequestId] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRequestId, setSelectedRequestId] =
+    useState<number | null>(null);
 
-  const [openRejectDialog, setOpenRejectDialog] = useState(false);
+  const [anchorEl, setAnchorEl] =
+    useState<null | HTMLElement>(null);
 
-  const [rejectReason, setRejectReason] = useState("");
+  const [openRejectDialog, setOpenRejectDialog] =
+    useState(false);
+
+  const [rejectReason, setRejectReason] =
+    useState("");
 
   useEffect(() => {
     loadPendingRequests();
@@ -74,7 +81,7 @@ const ViewRequests = () => {
 
       alert("Leave Approved");
 
-      loadPendingRequests();
+      await loadPendingRequests();
     } catch (error) {
       console.error(error);
       alert("Failed to approve leave.");
@@ -107,7 +114,7 @@ const ViewRequests = () => {
       setRejectReason("");
       setOpenRejectDialog(false);
 
-      loadPendingRequests();
+      await loadPendingRequests();
     } catch (error) {
       console.error(error);
       alert("Failed to reject leave.");
@@ -118,6 +125,31 @@ const ViewRequests = () => {
     setRejectReason("");
     setOpenRejectDialog(false);
   };
+
+  const filteredRequests = requests.filter(
+    (request) => {
+      const search =
+        searchTerm.toLowerCase().trim();
+
+      return (
+        request.userId
+          ?.toString()
+          .includes(search) ||
+        request.userName
+          ?.toLowerCase()
+          .includes(search) ||
+        request.departmentName
+          ?.toLowerCase()
+          .includes(search) ||
+        request.leaveTypeName
+          ?.toLowerCase()
+          .includes(search) ||
+        request.reason
+          ?.toLowerCase()
+          .includes(search)
+      );
+    }
+  );
 
   const columns = [
     {
@@ -188,19 +220,40 @@ const ViewRequests = () => {
         startIcon={<ArrowBackIcon />}
         variant="outlined"
         sx={{ mb: 2 }}
-        onClick={() => navigate("/dashboard")}
-      />
-
-      <Typography
-        variant="h4"
-        sx={{ mb: 3, fontWeight: "bold" }}
+        onClick={() =>
+          navigate("/dashboard")
+        }
       >
-        Leave Requests
-      </Typography>
+        Back
+      </Button>
+
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: "bold" }}
+        >
+          Leave Requests
+        </Typography>
+
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search requests..."
+          width={350}
+        />
+      </Box>
 
       <AppTable
         columns={columns}
-        rows={requests}
+        rows={filteredRequests}
         noDataMessage="No pending leave requests."
       />
 

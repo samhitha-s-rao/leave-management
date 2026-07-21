@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 
 import AppTable from "../../components/common/AppTable";
+import SearchBar from "../../components/SearchBar/SearchBar";
 
 import EmployeeActionMenu from "../../components/Employees/EmployeeActionMenu";
 import EmployeeEditDialog from "../../components/Employees/EmployeeEditDialog";
@@ -21,6 +22,7 @@ import type { Employee } from "../../types";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [selectedEmployee, setSelectedEmployee] =
     useState<Employee | null>(null);
@@ -33,48 +35,49 @@ const EmployeeList = () => {
       const users = await getEmployees();
 
       const mappedEmployees: Employee[] = users
-  .filter(
-    (user: EmployeeResponse) =>
-      user.roleName !== "Admin"
-  )
-  .map(
-    (user: EmployeeResponse) => ({
-      id: user.userId,
-      userId: user.userId,
+        .filter(
+          (user: EmployeeResponse) =>
+            user.roleName !== "Admin"
+        )
+        .map(
+          (user: EmployeeResponse) => ({
+            id: user.userId,
+            userId: user.userId,
 
-      name: user.name,
-      email: user.email,
+            name: user.name,
+            email: user.email,
 
-      role: user.roleName as
-        | "Employee"
-        | "Manager"
-        | "Admin",
+            role: user.roleName as
+              | "Employee"
+              | "Manager"
+              | "Admin",
 
-      roleId: user.roleId,
+            roleId: user.roleId,
 
-      department:
-        user.departmentName,
+            department:
+              user.departmentName,
 
-      departmentId:
-        user.departmentId,
+            departmentId:
+              user.departmentId,
 
-      designation:
-        user.designation ?? "",
+            designation:
+              user.designation ?? "",
 
-      phone:
-        user.phoneNumber ?? "",
+            phone:
+              user.phoneNumber ?? "",
 
-      address:
-        user.address ?? "",
+            address:
+              user.address ?? "",
 
-      dateOfJoining:
-        user.dateOfJoining,
+            dateOfJoining:
+              user.dateOfJoining,
 
-      active: user.isActive,
+            active: user.isActive,
 
-      profileImage: "",
-    })
-  );
+            profileImage: "",
+          })
+        );
+
       setEmployees(mappedEmployees);
     } catch (error) {
       console.error(
@@ -88,14 +91,16 @@ const EmployeeList = () => {
     fetchEmployees();
   }, []);
 
- const handleEdit = (employee: Employee) => {
-  console.log("Opening dialog");
+  const handleEdit = (
+    employee: Employee
+  ) => {
+    console.log("Opening dialog");
 
-  setSelectedEmployee(employee);
-  setOpenEditDialog(true);
+    setSelectedEmployee(employee);
+    setOpenEditDialog(true);
 
-  alert("Edit clicked");
-};
+    alert("Edit clicked");
+  };
 
   const handleSave = async (
     updatedEmployee: Employee
@@ -131,24 +136,57 @@ const EmployeeList = () => {
     }
   };
 
- const handleToggleStatus = async (
-  employee: Employee
-) => {
-  console.log("Status Employee:", employee);
-
-  try {
-    await updateEmployeeStatus(
-      employee.userId,
-      !employee.active
+  const handleToggleStatus = async (
+    employee: Employee
+  ) => {
+    console.log(
+      "Status Employee:",
+      employee
     );
 
-    console.log("Status Updated");
+    try {
+      await updateEmployeeStatus(
+        employee.userId,
+        !employee.active
+      );
 
-    await fetchEmployees();
-  } catch (error) {
-    console.error(error);
-  }
-};
+      console.log("Status Updated");
+
+      await fetchEmployees();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const filteredEmployees =
+    employees.filter((employee) => {
+      const search =
+        searchTerm.toLowerCase().trim();
+
+      return (
+        employee.userId
+          ?.toString()
+          .includes(search) ||
+        employee.name
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.email
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.role
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.department
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.phone
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.designation
+          ?.toLowerCase()
+          .includes(search)
+      );
+    });
 
   const columns = [
     {
@@ -230,40 +268,61 @@ const EmployeeList = () => {
       align: "center" as const,
 
       render: (row: Employee) => (
-  <EmployeeActionMenu
-    active={row.active}
-    onEdit={() => {
-      console.log("Edit clicked", row);
-      handleEdit(row);
-    }}
-    onToggleStatus={() => {
-      console.log("Toggle clicked", row);
-      handleToggleStatus(row);
-    }}
-  />
-),
+        <EmployeeActionMenu
+          active={row.active}
+          onEdit={() => {
+            console.log(
+              "Edit clicked",
+              row
+            );
+            handleEdit(row);
+          }}
+          onToggleStatus={() => {
+            console.log(
+              "Toggle clicked",
+              row
+            );
+            handleToggleStatus(row);
+          }}
+        />
+      ),
     },
   ];
 
   return (
     <Box p={4}>
-      <Typography
-        variant="h4"
-        mb={3}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent:
+            "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
       >
-        Employee List
-      </Typography>
+        <Typography variant="h4">
+          Employee List
+        </Typography>
+
+        <SearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search employee..."
+          width={350}
+        />
+      </Box>
 
       <AppTable
         columns={columns}
-        rows={employees}
+        rows={filteredEmployees}
         noDataMessage="No employees found."
         getRowStyle={(row) => ({
           opacity: row.active ? 1 : 0.45,
           backgroundColor: row.active
             ? "#fff"
             : "#f5f5f5",
-          transition: "all 0.3s ease",
+          transition:
+            "all 0.3s ease",
         })}
       />
 

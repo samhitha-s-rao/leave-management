@@ -8,7 +8,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import { useEffect, useState } from "react";
-
+import SearchBar from "../../components/SearchBar/SearchBar";
 import {
   getMyLeaves,
   getEmployeeLeaveHistory,
@@ -23,6 +23,8 @@ import AppTable from "../../components/common/AppTable";
 
 const LeaveHistoryPage = () => {
   const navigate = useNavigate();
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [myLeaveHistory, setMyLeaveHistory] =
     useState<LeaveHistory[]>([]);
@@ -160,15 +162,13 @@ const LeaveHistoryPage = () => {
       headerName: "Employee Name",
     },
     {
-    field: "departmentName",
-    headerName: "Department",
-
+      field: "departmentName",
+      headerName: "Department",
     },
     {
       field: "roleName",
       headerName: "Role",
     },
-    
     {
       field: "leaveTypeName",
       headerName: "Leave Type",
@@ -216,6 +216,33 @@ const LeaveHistoryPage = () => {
       ),
     },
   ];
+
+  const filteredEmployeeHistory =
+    employeeHistory.filter((employee) => {
+      const search =
+        searchTerm.toLowerCase().trim();
+
+      return (
+        employee.userId
+          ?.toString()
+          .includes(search) ||
+        employee.userName
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.departmentName
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.roleName
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.leaveTypeName
+          ?.toLowerCase()
+          .includes(search) ||
+        employee.status
+          ?.toLowerCase()
+          .includes(search)
+      );
+    });
 
   return (
     <Box sx={{ p: 4 }}>
@@ -274,17 +301,31 @@ const LeaveHistoryPage = () => {
       {(user.role === "Manager" ||
         user.role === "Admin") && (
         <>
-          <Typography
-            variant="h5"
-            mt={4}
-            mb={2}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent:
+                "space-between",
+              alignItems: "center",
+              mt: 4,
+              mb: 2,
+            }}
           >
-            Employee Leave History
-          </Typography>
+            <Typography variant="h5">
+              Employee Leave History
+            </Typography>
+
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder="Search employee..."
+              width={350}
+            />
+          </Box>
 
           <AppTable
             columns={employeeColumns}
-            rows={employeeHistory}
+            rows={filteredEmployeeHistory}
             noDataMessage="No employee leave history found."
           />
         </>
