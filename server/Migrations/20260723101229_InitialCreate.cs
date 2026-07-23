@@ -4,6 +4,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace server.Migrations
 {
     /// <inheritdoc />
@@ -32,8 +34,7 @@ namespace server.Migrations
                     HolidayId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     HolidayName = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    HolidayDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
+                    HolidayDate = table.Column<DateOnly>(type: "date", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,8 +76,12 @@ namespace server.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Address = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     PasswordHash = table.Column<string>(type: "text", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    DateOfJoining = table.Column<DateOnly>(type: "date", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    Designation = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     RoleId = table.Column<int>(type: "integer", nullable: false),
                     DepartmentId = table.Column<int>(type: "integer", nullable: false),
                     ManagerId = table.Column<int>(type: "integer", nullable: true)
@@ -114,10 +119,7 @@ namespace server.Migrations
                     AttendanceDate = table.Column<DateOnly>(type: "date", nullable: false),
                     CheckInTime = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
                     CheckOutTime = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
-                    WorkingHours = table.Column<double>(type: "double precision", nullable: false),
-                    OvertimeHours = table.Column<double>(type: "double precision", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    Remarks = table.Column<string>(type: "text", nullable: true)
+                    WorkingHours = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -173,7 +175,8 @@ namespace server.Migrations
                     Status = table.Column<string>(type: "text", nullable: false),
                     ManagerRemarks = table.Column<string>(type: "text", nullable: true),
                     ApprovedBy = table.Column<int>(type: "integer", nullable: true),
-                    ActionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    ActionDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -190,6 +193,71 @@ namespace server.Migrations
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Message = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Link = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Departments",
+                columns: new[] { "DepartmentId", "DepartmentName" },
+                values: new object[,]
+                {
+                    { 1, "Administration" },
+                    { 2, "Development" },
+                    { 3, "Human Resources" },
+                    { 4, "Finance" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "LeaveTypes",
+                columns: new[] { "LeaveTypeId", "AllocatedLeaves", "LeaveTypeName" },
+                values: new object[,]
+                {
+                    { 1, 12, "Casual Leave" },
+                    { 2, 10, "Sick Leave" },
+                    { 3, 15, "Earned Leave" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "RoleId", "RoleName" },
+                values: new object[,]
+                {
+                    { 1, "Admin" },
+                    { 2, "Manager" },
+                    { 3, "Employee" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Address", "DateOfJoining", "DepartmentId", "Designation", "Email", "IsActive", "ManagerId", "Name", "PasswordHash", "PhoneNumber", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, null, new DateOnly(1, 1, 1), 1, "", "admin@test.com", true, null, "Admin User", "$2a$11$dIRcqLN9ra7kSjzxrk8.ZuAEaPHfo0i4PZL7ek8LyjI1Gx/XOgtsm", "", 1 },
+                    { 2, null, new DateOnly(1, 1, 1), 2, "", "manager@test.com", true, null, "Jane Smith", "$2a$11$Cg1Fem.NDJO/UtHAnOGLXOTm8I7tDnFC2gUHEApqvSl7UNJKFW0Au", "", 2 },
+                    { 3, null, new DateOnly(1, 1, 1), 2, "", "employee@test.com", true, 2, "John Doe", "$2a$11$90gTurBEthchZx57oyM8Aed7r511ob.c1kIV/76ThFpQOCHxrhNXG", "", 3 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -228,6 +296,11 @@ namespace server.Migrations
                 table: "LeaveTypes",
                 column: "LeaveTypeName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_RoleName",
@@ -277,6 +350,9 @@ namespace server.Migrations
 
             migrationBuilder.DropTable(
                 name: "LeaveRequests");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "LeaveTypes");

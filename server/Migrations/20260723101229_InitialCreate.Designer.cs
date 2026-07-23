@@ -12,7 +12,7 @@ using server.Data;
 namespace server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260709112936_InitialCreate")]
+    [Migration("20260723101229_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -41,16 +41,6 @@ namespace server.Migrations
 
                     b.Property<TimeOnly?>("CheckOutTime")
                         .HasColumnType("time without time zone");
-
-                    b.Property<double>("OvertimeHours")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -84,6 +74,28 @@ namespace server.Migrations
                         .IsUnique();
 
                     b.ToTable("Departments");
+
+                    b.HasData(
+                        new
+                        {
+                            DepartmentId = 1,
+                            DepartmentName = "Administration"
+                        },
+                        new
+                        {
+                            DepartmentId = 2,
+                            DepartmentName = "Development"
+                        },
+                        new
+                        {
+                            DepartmentId = 3,
+                            DepartmentName = "Human Resources"
+                        },
+                        new
+                        {
+                            DepartmentId = 4,
+                            DepartmentName = "Finance"
+                        });
                 });
 
             modelBuilder.Entity("server.Models.Holiday", b =>
@@ -93,10 +105,6 @@ namespace server.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("HolidayId"));
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
 
                     b.Property<DateOnly>("HolidayDate")
                         .HasColumnType("date");
@@ -150,6 +158,9 @@ namespace server.Migrations
 
                     b.Property<int?>("ApprovedBy")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateOnly>("EndDate")
                         .HasColumnType("date");
@@ -212,6 +223,64 @@ namespace server.Migrations
                         .IsUnique();
 
                     b.ToTable("LeaveTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            LeaveTypeId = 1,
+                            AllocatedLeaves = 12,
+                            LeaveTypeName = "Casual Leave"
+                        },
+                        new
+                        {
+                            LeaveTypeId = 2,
+                            AllocatedLeaves = 10,
+                            LeaveTypeName = "Sick Leave"
+                        },
+                        new
+                        {
+                            LeaveTypeId = 3,
+                            AllocatedLeaves = 15,
+                            LeaveTypeName = "Earned Leave"
+                        });
+                });
+
+            modelBuilder.Entity("server.Models.Notification", b =>
+                {
+                    b.Property<int>("NotificationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("NotificationId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Link")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("NotificationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("server.Models.Role", b =>
@@ -233,6 +302,23 @@ namespace server.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            RoleName = "Manager"
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            RoleName = "Employee"
+                        });
                 });
 
             modelBuilder.Entity("server.Models.User", b =>
@@ -243,8 +329,20 @@ namespace server.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.Property<DateOnly>("DateOfJoining")
+                        .HasColumnType("date");
+
                     b.Property<int>("DepartmentId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Designation")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -266,6 +364,11 @@ namespace server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 
@@ -284,6 +387,48 @@ namespace server.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            DateOfJoining = new DateOnly(1, 1, 1),
+                            DepartmentId = 1,
+                            Designation = "",
+                            Email = "admin@test.com",
+                            IsActive = true,
+                            Name = "Admin User",
+                            PasswordHash = "$2a$11$dIRcqLN9ra7kSjzxrk8.ZuAEaPHfo0i4PZL7ek8LyjI1Gx/XOgtsm",
+                            PhoneNumber = "",
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            DateOfJoining = new DateOnly(1, 1, 1),
+                            DepartmentId = 2,
+                            Designation = "",
+                            Email = "manager@test.com",
+                            IsActive = true,
+                            Name = "Jane Smith",
+                            PasswordHash = "$2a$11$Cg1Fem.NDJO/UtHAnOGLXOTm8I7tDnFC2gUHEApqvSl7UNJKFW0Au",
+                            PhoneNumber = "",
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            DateOfJoining = new DateOnly(1, 1, 1),
+                            DepartmentId = 2,
+                            Designation = "",
+                            Email = "employee@test.com",
+                            IsActive = true,
+                            ManagerId = 2,
+                            Name = "John Doe",
+                            PasswordHash = "$2a$11$90gTurBEthchZx57oyM8Aed7r511ob.c1kIV/76ThFpQOCHxrhNXG",
+                            PhoneNumber = "",
+                            RoleId = 3
+                        });
                 });
 
             modelBuilder.Entity("server.Models.Attendance", b =>
@@ -331,6 +476,17 @@ namespace server.Migrations
                         .IsRequired();
 
                     b.Navigation("LeaveType");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("server.Models.Notification", b =>
+                {
+                    b.HasOne("server.Models.User", "User")
+                        .WithMany("Notifications")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -387,6 +543,8 @@ namespace server.Migrations
                     b.Navigation("LeaveBalances");
 
                     b.Navigation("LeaveRequests");
+
+                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }
