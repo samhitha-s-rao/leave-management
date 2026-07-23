@@ -37,7 +37,7 @@ import "./CompanyCalendar.css";
 import  {  useEffect } from "react";
 import axios from "axios";
 
-const API = "http://localhost:5238/api/Holiday";
+const API = `${import.meta.env.VITE_API_URL}/api/Holiday`;
 
 const CompanyCalendar: React.FC = () => {
    const navigate = useNavigate();
