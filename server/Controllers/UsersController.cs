@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using server.DTOs.User;
 using server.Services.Interfaces;
-
+using server.Helpers;
 namespace server.Controllers
 {
     [ApiController]
@@ -138,6 +138,17 @@ public async Task<IActionResult> UpdateEmployeeStatus(
             });
         }
 
+        [HttpGet("reporting-managers/{roleId}")]
+        public async Task<IActionResult> GetReportingManagers(int roleId)
+        {
+            if (roleId == RoleConstants.Manager)
+                return Ok(await _userService.GetAdminsAsync());
+
+            if (roleId == RoleConstants.Employee)
+                return Ok(await _userService.GetManagersAsync());
+
+            return Ok(new List<ManagerDto>());
+        }
         
     }
 }

@@ -98,8 +98,6 @@ const EmployeeList = () => {
 
     setSelectedEmployee(employee);
     setOpenEditDialog(true);
-
-    alert("Edit clicked");
   };
 
   const handleSave = async (
