@@ -132,14 +132,16 @@ builder.Services.AddScoped<INotificationService,NotificationService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact",
-        policy =>
-        {
-            policy
-            .WithOrigins("http://localhost:5173")
+    options.AddPolicy("AllowReact", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://YOUR-VERCEL-APP.vercel.app"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
-        });
+    });
 });
 var app = builder.Build();
 
