@@ -109,8 +109,8 @@ builder.Services.AddAuthorization();
 // Dependency Injection
 // --------------------
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+// builder.Services.AddScoped<IUserRepository, UserRepository>();
+// builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
@@ -136,9 +136,9 @@ builder.Services.AddCors(options =>
     {
         policy
             .WithOrigins(
-                "http://localhost:5173",
-                "https://YOUR-VERCEL-APP.vercel.app"
-            )
+            "http://localhost:5173",
+            "https://leave-management.vercel.app"
+        )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -149,19 +149,29 @@ var app = builder.Build();
 // Middleware
 // --------------------
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("AllowReact");
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+    Console.WriteLine("Applying migrations...");
+    db.Database.Migrate();
+    Console.WriteLine("Migrations applied successfully.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+    throw;
+}
+app.MapGet("/", () => "Leave Management API is running successfully.");
 app.Run();
