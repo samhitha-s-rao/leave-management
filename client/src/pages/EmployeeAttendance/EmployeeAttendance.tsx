@@ -16,7 +16,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import "../Attendance/Attendance.css";
 
 import EmployeeCard from "../Attendance/EmployeeCard";
-import AttendanceLegend from "../Attendance/AttendanceLegend";
 import AttendanceTable from "../Attendance/AttendanceTable";
 import AttendanceSummary from "../Attendance/AttendanceSummary";
 
