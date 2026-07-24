@@ -86,13 +86,19 @@ namespace server.Controllers
                     return Unauthorized();
                 }
 
-                var result =
-                    await _leaveService
-                        .GetEmployeeLeaveHistoryAsync(
-                            userId,
-                            role!);
-
-                return Ok(result);
+               try
+{
+    var result = await _leaveService.ApplyLeaveAsync(userId, dto);
+    return Ok(result);
+}
+catch (Exception ex)
+{
+    return StatusCode(500, new
+    {
+        Error = ex.Message,
+        StackTrace = ex.ToString()
+    });
+}
             }
             
 
