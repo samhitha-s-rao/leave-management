@@ -41,6 +41,8 @@ namespace server.Controllers
 
             try
 {
+   try
+{
     var result = await _leaveService.ApplyLeaveAsync(userId, dto);
     return Ok(result);
 }
@@ -48,8 +50,9 @@ catch (Exception ex)
 {
     return StatusCode(500, new
     {
-        Error = ex.Message,
-        StackTrace = ex.ToString()
+        Message = ex.Message,
+        InnerException = ex.InnerException?.Message,
+        StackTrace = ex.StackTrace
     });
 }
         }
