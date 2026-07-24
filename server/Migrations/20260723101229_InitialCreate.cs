@@ -119,10 +119,7 @@ namespace server.Migrations
                     AttendanceDate = table.Column<DateOnly>(type: "date", nullable: false),
                     CheckInTime = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
                     CheckOutTime = table.Column<TimeOnly>(type: "time without time zone", nullable: true),
-                    WorkingHours = table.Column<double>(type: "double precision", nullable: false),
-                    OvertimeHours = table.Column<double>(type: "double precision", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
-                    Remarks = table.Column<string>(type: "text", nullable: true)
+                    WorkingHours = table.Column<double>(type: "double precision", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -198,6 +195,30 @@ namespace server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    NotificationId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Title = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Message = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Link = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.NotificationId);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Departments",
                 columns: new[] { "DepartmentId", "DepartmentName" },
@@ -216,8 +237,7 @@ namespace server.Migrations
                 {
                     { 1, 12, "Casual Leave" },
                     { 2, 10, "Sick Leave" },
-                    { 3, 15, "Earned Leave" },
-                    { 4, 24, "Work From Home" }
+                    { 3, 15, "Earned Leave" }
                 });
 
             migrationBuilder.InsertData(
@@ -278,6 +298,11 @@ namespace server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Roles_RoleName",
                 table: "Roles",
                 column: "RoleName",
@@ -325,6 +350,9 @@ namespace server.Migrations
 
             migrationBuilder.DropTable(
                 name: "LeaveRequests");
+
+            migrationBuilder.DropTable(
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "LeaveTypes");

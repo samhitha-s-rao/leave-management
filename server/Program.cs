@@ -109,8 +109,8 @@ builder.Services.AddAuthorization();
 // Dependency Injection
 // --------------------
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
+// builder.Services.AddScoped<IUserRepository, UserRepository>();
+// builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ILeaveRepository, LeaveRepository>();
@@ -132,14 +132,13 @@ builder.Services.AddScoped<INotificationService,NotificationService>();
 builder.Services.AddScoped<JwtTokenGenerator>();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReact",
-        policy =>
-        {
-            policy
-            .WithOrigins("http://localhost:5173")
+    options.AddPolicy("AllowReact", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod();
-        });
+    });
 });
 var app = builder.Build();
 
@@ -147,19 +146,29 @@ var app = builder.Build();
 // Middleware
 // --------------------
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
+app.UseSwagger();
+app.UseSwaggerUI();
 
-    app.UseSwaggerUI();
-}
-
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseCors("AllowReact");
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
+    Console.WriteLine("Applying migrations...");
+    db.Database.Migrate();
+    Console.WriteLine("Migrations applied successfully.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex);
+    throw;
+}
+app.MapGet("/", () => "Leave Management API is running successfully.");
 app.Run();
